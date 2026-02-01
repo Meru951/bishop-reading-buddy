@@ -28,7 +28,7 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 700px;
             margin: 0 auto;
         }
 
@@ -39,15 +39,15 @@
         }
 
         .bishop-avatar {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             background: var(--blue-dark);
             border-radius: 50%;
             margin: 0 auto 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 60px;
+            font-size: 50px;
             border: 4px solid var(--white);
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             animation: bounce 2s infinite;
@@ -55,31 +55,31 @@
 
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-8px); }
         }
 
         .header h1 {
             color: var(--blue-dark);
-            font-size: 2em;
+            font-size: 1.8em;
             text-shadow: 2px 2px 0 var(--white);
         }
 
         .header p {
             color: var(--blue-dark);
-            font-size: 1.2em;
+            font-size: 1.1em;
         }
 
-        /* Mode Tabs */
-        .tabs {
+        /* Speed Toggle */
+        .speed-toggle {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
             justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        .tab-btn {
-            padding: 15px 30px;
-            font-size: 1.2em;
+        .speed-btn {
+            padding: 10px 20px;
+            font-size: 1em;
             font-family: inherit;
             border: none;
             border-radius: 20px;
@@ -87,32 +87,23 @@
             transition: all 0.3s;
             background: var(--white);
             color: var(--blue-dark);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        .tab-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .tab-btn.active {
+        .speed-btn.active {
             background: var(--blue-dark);
             color: var(--white);
         }
 
-        /* Main Content Area */
-        .content-area {
+        /* Chat Area */
+        .chat-area {
             background: var(--white);
-            border-radius: 30px;
-            padding: 30px;
+            border-radius: 25px;
+            padding: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            min-height: 400px;
-        }
-
-        /* Chat Mode */
-        .chat-container {
+            min-height: 450px;
             display: flex;
             flex-direction: column;
-            height: 400px;
         }
 
         .chat-messages {
@@ -121,36 +112,202 @@
             padding: 10px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
+            max-height: 350px;
         }
 
+        /* Messages */
         .message {
-            max-width: 80%;
-            padding: 15px 20px;
-            border-radius: 20px;
-            font-size: 1.1em;
-            line-height: 1.4;
+            max-width: 85%;
         }
 
         .message.bishop {
-            background: var(--blue-light);
-            color: var(--blue-dark);
             align-self: flex-start;
-            border-bottom-left-radius: 5px;
         }
 
         .message.user {
+            align-self: flex-end;
+        }
+
+        .message-bubble {
+            padding: 15px 20px;
+            border-radius: 20px;
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+
+        .message.bishop .message-bubble {
+            background: var(--blue-light);
+            color: var(--blue-dark);
+            border-bottom-left-radius: 5px;
+        }
+
+        .message.user .message-bubble {
             background: var(--blue-dark);
             color: var(--white);
-            align-self: flex-end;
             border-bottom-right-radius: 5px;
         }
 
+        /* Karaoke Words in Bishop Messages */
+        .message.bishop .word {
+            display: inline;
+            padding: 2px 4px;
+            border-radius: 5px;
+            transition: all 0.15s;
+        }
+
+        .message.bishop .word.highlight {
+            background: var(--blue-main);
+            color: var(--white);
+            transform: scale(1.1);
+            display: inline-block;
+            box-shadow: 0 2px 10px rgba(33, 150, 243, 0.4);
+        }
+
+        .message.bishop .word.read {
+            color: var(--blue-dark);
+            font-weight: 500;
+        }
+
+        /* Read Button */
+        .read-btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            font-size: 1em;
+            font-family: inherit;
+            background: var(--blue-accent);
+            color: var(--white);
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .read-btn:hover {
+            background: var(--blue-dark);
+            transform: scale(1.05);
+        }
+
+        .read-btn.reading {
+            background: #f44336;
+        }
+
+        /* Word Quiz Popup */
+        .quiz-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--white);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            z-index: 100;
+            text-align: center;
+            max-width: 90%;
+            width: 350px;
+        }
+
+        .quiz-popup.show {
+            display: block;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .quiz-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
+        }
+
+        .quiz-overlay.show {
+            display: block;
+        }
+
+        .quiz-title {
+            font-size: 1.3em;
+            color: var(--blue-dark);
+            margin-bottom: 15px;
+        }
+
+        .quiz-word {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--blue-main);
+            margin: 15px 0;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            padding: 12px 20px;
+            font-size: 1.1em;
+            font-family: inherit;
+            border: 3px solid var(--blue-accent);
+            border-radius: 15px;
+            background: var(--white);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            background: var(--blue-light);
+        }
+
+        .quiz-option.correct {
+            background: #4caf50;
+            color: var(--white);
+            border-color: #4caf50;
+        }
+
+        .quiz-option.wrong {
+            background: #f44336;
+            color: var(--white);
+            border-color: #f44336;
+        }
+
+        .quiz-feedback {
+            font-size: 1.2em;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .quiz-close {
+            margin-top: 15px;
+            padding: 10px 25px;
+            font-size: 1em;
+            font-family: inherit;
+            background: var(--gray-light);
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+
+        /* Input Area */
         .chat-input-area {
             display: flex;
             gap: 10px;
             padding-top: 15px;
             border-top: 2px solid var(--blue-light);
+            margin-top: 15px;
         }
 
         .chat-input {
@@ -168,8 +325,8 @@
         }
 
         .send-btn {
-            padding: 15px 30px;
-            font-size: 1.2em;
+            padding: 15px 25px;
+            font-size: 1.1em;
             font-family: inherit;
             background: var(--blue-dark);
             color: var(--white);
@@ -183,188 +340,33 @@
             transform: scale(1.05);
         }
 
-        /* Reading Mode */
-        .reading-container {
+        /* Progress */
+        .progress-bar {
             text-align: center;
-        }
-
-        .reading-text {
-            font-size: 2em;
-            line-height: 2;
-            padding: 30px;
-            background: var(--gray-light);
-            border-radius: 20px;
-            margin-bottom: 20px;
-        }
-
-        .reading-text .word {
-            display: inline-block;
-            padding: 5px 10px;
-            margin: 5px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .reading-text .word:hover {
-            background: var(--blue-light);
-        }
-
-        .reading-text .word.highlight {
-            background: var(--blue-main);
-            color: var(--white);
-            transform: scale(1.2);
-            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
-        }
-
-        .reading-text .word.completed {
-            color: var(--blue-dark);
-        }
-
-        .reading-controls {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
-        .control-btn {
-            padding: 15px 25px;
-            font-size: 1.1em;
-            font-family: inherit;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: var(--blue-accent);
-            color: var(--white);
-        }
-
-        .control-btn:hover {
-            transform: scale(1.05);
-            background: var(--blue-dark);
-        }
-
-        .control-btn.active {
-            background: var(--blue-dark);
-        }
-
-        .speed-label {
-            font-size: 1.1em;
-            color: var(--blue-dark);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Word Quiz */
-        .quiz-container {
-            display: none;
-            background: var(--blue-light);
-            border-radius: 20px;
-            padding: 25px;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .quiz-container.show {
-            display: block;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .quiz-question {
-            font-size: 1.4em;
-            color: var(--blue-dark);
-            margin-bottom: 20px;
-        }
-
-        .quiz-word {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: var(--blue-main);
-            margin: 10px 0 20px;
-        }
-
-        .quiz-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .quiz-option {
-            padding: 15px 25px;
-            font-size: 1.2em;
-            font-family: inherit;
-            border: 3px solid var(--blue-accent);
-            border-radius: 15px;
-            background: var(--white);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .quiz-option:hover {
-            background: var(--blue-accent);
-            color: var(--white);
-        }
-
-        .quiz-option.correct {
-            background: #4caf50;
-            color: var(--white);
-            border-color: #4caf50;
-        }
-
-        .quiz-option.wrong {
-            background: #f44336;
-            color: var(--white);
-            border-color: #f44336;
-        }
-
-        .quiz-feedback {
-            font-size: 1.3em;
-            margin-top: 15px;
             padding: 10px;
-            border-radius: 10px;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        /* Progress Stars */
-        .progress-area {
-            text-align: center;
-            margin-top: 20px;
-            padding: 15px;
-            background: var(--blue-light);
-            border-radius: 15px;
+            margin-top: 15px;
         }
 
         .stars {
-            font-size: 2em;
+            font-size: 1.5em;
         }
 
         .progress-text {
             color: var(--blue-dark);
-            font-size: 1.1em;
+            font-size: 0.9em;
         }
 
-        /* Help Button */
+        /* Help */
         .help-btn {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background: var(--blue-dark);
             color: var(--white);
-            font-size: 1.5em;
+            font-size: 1.3em;
             border: none;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -375,319 +377,344 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="bishop-avatar" id="bishopAvatar">🤖</div>
+            <div class="bishop-avatar">🤖</div>
             <h1>Bishop</h1>
-            <p>Your Reading Buddy! 📚</p>
+            <p>Your Robot Reading Buddy! 📚</p>
         </div>
 
-        <!-- Mode Tabs -->
-        <div class="tabs">
-            <button class="tab-btn active" onclick="showMode('chat')">💬 Chat</button>
-            <button class="tab-btn" onclick="showMode('read')">📖 Read</button>
+        <!-- Speed Toggle -->
+        <div class="speed-toggle">
+            <button class="speed-btn active" id="slowBtn" onclick="setSpeed('slow')">🐢 Slow</button>
+            <button class="speed-btn" id="normalBtn" onclick="setSpeed('normal')">🐇 Fast</button>
         </div>
 
-        <!-- Content Area -->
-        <div class="content-area">
-            <!-- Chat Mode -->
-            <div id="chatMode" class="chat-container">
-                <div class="chat-messages" id="chatMessages">
-                    <div class="message bishop">
-                        Hi Krishna! 👋 I'm Bishop, your robot buddy!<br><br>
-                        Want to read a story with me? Or talk about robots? 🤖
-                    </div>
-                </div>
-                <div class="chat-input-area">
-                    <input type="text" class="chat-input" id="chatInput" placeholder="Type here..." onkeypress="handleKeyPress(event)">
-                    <button class="send-btn" onclick="sendMessage()">Send! 🚀</button>
-                </div>
+        <!-- Chat Area -->
+        <div class="chat-area">
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages appear here -->
             </div>
 
-            <!-- Reading Mode -->
-            <div id="readMode" class="reading-container hidden">
-                <div class="reading-controls">
-                    <span class="speed-label">Speed:</span>
-                    <button class="control-btn active" onclick="setSpeed('slow')" id="slowBtn">🐢 Slow</button>
-                    <button class="control-btn" onclick="setSpeed('normal')" id="normalBtn">🐇 Normal</button>
-                </div>
-
-                <div class="reading-text" id="readingText">
-                    <!-- Words will be inserted here -->
-                </div>
-
-                <div class="reading-controls">
-                    <button class="control-btn" onclick="startReading()">▶️ Read to Me!</button>
-                    <button class="control-btn" onclick="stopReading()">⏹️ Stop</button>
-                    <button class="control-btn" onclick="newStory()">📖 New Story</button>
-                </div>
-
-                <!-- Word Quiz -->
-                <div class="quiz-container" id="quizContainer">
-                    <div class="quiz-question">🤔 What does this word mean?</div>
-                    <div class="quiz-word" id="quizWord"></div>
-                    <div class="quiz-options" id="quizOptions">
-                        <!-- Options inserted by JS -->
-                    </div>
-                    <div class="quiz-feedback" id="quizFeedback"></div>
-                </div>
-
-                <!-- Progress -->
-                <div class="progress-area">
-                    <div class="stars" id="stars">⭐⭐⭐</div>
-                    <div class="progress-text">Words learned today: <span id="wordsLearned">0</span></div>
-                </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Talk to Bishop..." onkeypress="handleKeyPress(event)">
+                <button class="send-btn" onclick="sendMessage()">Send! 🚀</button>
             </div>
         </div>
+
+        <!-- Progress -->
+        <div class="progress-bar">
+            <div class="stars" id="stars">⭐⭐⭐</div>
+            <div class="progress-text">Words learned: <span id="wordsLearned">0</span></div>
+        </div>
+    </div>
+
+    <!-- Quiz Popup -->
+    <div class="quiz-overlay" id="quizOverlay"></div>
+    <div class="quiz-popup" id="quizPopup">
+        <div class="quiz-title">🤔 What does this word mean?</div>
+        <div class="quiz-word" id="quizWord"></div>
+        <div class="quiz-options" id="quizOptions"></div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+        <button class="quiz-close" onclick="closeQuiz()">Close</button>
     </div>
 
     <button class="help-btn" onclick="showHelp()">❓</button>
 
     <script>
         // State
-        let currentMode = 'chat';
         let readingSpeed = 'slow';
         let isReading = false;
-        let currentWordIndex = 0;
+        let currentReadingMsg = null;
         let wordsLearned = 0;
         let speechSynth = window.speechSynthesis;
-        let currentUtterance = null;
+        let messageCounter = 0;
 
-        // Robot stories for reading practice
-        const stories = [
-            {
-                text: "The robot can spin. It goes round and round. Fast or slow. We can use it to mix things. Like a smoothie!",
-                words: {
-                    "robot": { meaning: "A machine that can move and do things", options: ["A machine that moves", "A type of fruit", "A big cat"] },
-                    "spin": { meaning: "To turn around very fast", options: ["To turn around fast", "To sleep", "To eat"] },
-                    "smoothie": { meaning: "A yummy blended drink", options: ["A blended drink", "A type of robot", "A fast car"] }
-                }
-            },
-            {
-                text: "A motor can spin. It is like muscles for a robot. The motor makes things go. Push the button to start!",
-                words: {
-                    "motor": { meaning: "The part that makes a robot move", options: ["Makes things move", "A type of food", "A color"] },
-                    "muscles": { meaning: "What helps you move your arms", options: ["Help you move", "A type of plant", "A robot name"] },
-                    "button": { meaning: "You push it to make things happen", options: ["You push it", "You eat it", "You wear it"] }
-                }
-            },
-            {
-                text: "The robot has sensors. Sensors help it see and feel. Like your eyes and hands! The robot is smart.",
-                words: {
-                    "sensors": { meaning: "Parts that help a robot feel and see", options: ["Help robots sense", "A type of fruit", "Robot shoes"] },
-                    "smart": { meaning: "Very clever and good at thinking", options: ["Very clever", "Very slow", "Very small"] }
-                }
-            }
-        ];
+        // Vocabulary for quizzes
+        const vocabulary = {
+            "robot": { meaning: "A machine that can move and do things", options: ["A machine that moves", "A type of fruit", "A big cat"] },
+            "motor": { meaning: "The part that makes things spin", options: ["Makes things spin", "A type of food", "A color"] },
+            "spin": { meaning: "To turn around very fast", options: ["To turn around fast", "To sleep", "To eat"] },
+            "button": { meaning: "You push it to start things", options: ["You push it", "You eat it", "You wear it"] },
+            "smoothie": { meaning: "A yummy blended drink", options: ["A blended drink", "A type of robot", "A fast car"] },
+            "mango": { meaning: "A sweet orange fruit", options: ["A sweet fruit", "A robot part", "A tool"] },
+            "mix": { meaning: "To blend things together", options: ["Blend together", "To break apart", "To color"] },
+            "power": { meaning: "Energy that makes things work", options: ["Energy for machines", "A type of fruit", "A sound"] },
+            "sensor": { meaning: "Helps robots feel and see", options: ["Helps robots sense", "A robot name", "A button"] },
+            "build": { meaning: "To make or create something", options: ["To make something", "To break something", "To eat something"] }
+        };
 
-        let currentStory = stories[0];
-
-        // Mode switching
-        function showMode(mode) {
-            currentMode = mode;
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            document.getElementById('chatMode').classList.toggle('hidden', mode !== 'chat');
-            document.getElementById('readMode').classList.toggle('hidden', mode !== 'read');
-            
-            if (mode === 'read') {
-                loadStory();
-            }
-        }
-
-        // Chat functions
-        function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
-            if (!message) return;
-
-            addMessage(message, 'user');
-            input.value = '';
-
-            // Simple bot response
-            setTimeout(() => {
-                const response = getBishopResponse(message);
-                addMessage(response, 'bishop');
-                speakText(response);
-            }, 500);
-        }
-
-        function handleKeyPress(e) {
-            if (e.key === 'Enter') sendMessage();
-        }
-
-        function addMessage(text, sender) {
-            const container = document.getElementById('chatMessages');
-            const msg = document.createElement('div');
-            msg.className = `message ${sender}`;
-            msg.textContent = text;
-            container.appendChild(msg);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function getBishopResponse(msg) {
-            const lower = msg.toLowerCase();
-            if (lower.includes('robot')) {
-                return "Robots are SO cool! 🤖 They can spin, move, and help us do things!";
-            } else if (lower.includes('hello') || lower.includes('hi')) {
-                return "Hello friend! 👋 Ready to learn about robots?";
-            } else if (lower.includes('read')) {
-                return "Click the READ tab up top! We can read together! 📖";
-            } else if (lower.includes('smoothie') || lower.includes('mango')) {
-                return "Yum! 🥭 Mango smoothies are the BEST! Our robot will make them!";
-            } else {
-                return "That's cool! Tell me more! What do you want to build? 🔧";
-            }
-        }
-
-        // Reading functions
-        function loadStory() {
-            const container = document.getElementById('readingText');
-            const words = currentStory.text.split(' ');
-            container.innerHTML = words.map((word, i) => 
-                `<span class="word" data-index="${i}" onclick="wordClicked('${word.replace(/[^a-zA-Z]/g, '').toLowerCase()}')">${word}</span>`
-            ).join(' ');
-        }
-
+        // Speed control
         function setSpeed(speed) {
             readingSpeed = speed;
             document.getElementById('slowBtn').classList.toggle('active', speed === 'slow');
             document.getElementById('normalBtn').classList.toggle('active', speed === 'normal');
         }
 
-        function startReading() {
-            if (isReading) return;
+        // Send message
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            addMessage(text, 'user');
+            input.value = '';
+
+            // Get Bishop's response
+            setTimeout(() => {
+                const response = getBishopResponse(text);
+                addMessage(response, 'bishop');
+            }, 600);
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        // Add message to chat
+        function addMessage(text, sender) {
+            const container = document.getElementById('chatMessages');
+            const msgId = 'msg-' + (++messageCounter);
+            
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender}`;
+            msgDiv.id = msgId;
+
+            if (sender === 'bishop') {
+                // Create karaoke-style words
+                const words = text.split(' ');
+                const wordsHtml = words.map((word, i) => {
+                    const cleanWord = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
+                    const isVocab = vocabulary[cleanWord] ? 'vocab' : '';
+                    return `<span class="word ${isVocab}" data-index="${i}" data-word="${cleanWord}">${word}</span>`;
+                }).join(' ');
+
+                msgDiv.innerHTML = `
+                    <div class="message-bubble">${wordsHtml}</div>
+                    <button class="read-btn" onclick="readMessage('${msgId}')">
+                        <span class="btn-icon">🔊</span> Read to me!
+                    </button>
+                `;
+            } else {
+                msgDiv.innerHTML = `<div class="message-bubble">${text}</div>`;
+            }
+
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+
+            // Add click handlers for vocab words
+            if (sender === 'bishop') {
+                msgDiv.querySelectorAll('.word.vocab').forEach(wordEl => {
+                    wordEl.style.cursor = 'pointer';
+                    wordEl.style.textDecoration = 'underline';
+                    wordEl.style.textDecorationStyle = 'dotted';
+                    wordEl.onclick = () => showQuiz(wordEl.dataset.word);
+                });
+            }
+        }
+
+        // Read message with karaoke highlighting
+        function readMessage(msgId) {
+            if (isReading) {
+                stopReading();
+                return;
+            }
+
+            const msgDiv = document.getElementById(msgId);
+            const btn = msgDiv.querySelector('.read-btn');
+            const words = msgDiv.querySelectorAll('.word');
+            
+            if (words.length === 0) return;
+
             isReading = true;
-            currentWordIndex = 0;
+            currentReadingMsg = msgId;
+            btn.innerHTML = '⏹️ Stop';
+            btn.classList.add('reading');
+
+            let wordIndex = 0;
+
+            function readNextWord() {
+                if (!isReading || wordIndex >= words.length) {
+                    stopReading();
+                    // Maybe show a quiz after reading
+                    if (wordIndex >= words.length && Math.random() > 0.5) {
+                        const vocabWords = Array.from(words).filter(w => w.classList.contains('vocab'));
+                        if (vocabWords.length > 0) {
+                            const randomWord = vocabWords[Math.floor(Math.random() * vocabWords.length)];
+                            setTimeout(() => showQuiz(randomWord.dataset.word), 500);
+                        }
+                    }
+                    return;
+                }
+
+                // Clear previous highlights
+                words.forEach(w => w.classList.remove('highlight'));
+
+                // Highlight current word
+                const currentWord = words[wordIndex];
+                currentWord.classList.add('highlight');
+                currentWord.classList.add('read');
+
+                // Speak
+                const utterance = new SpeechSynthesisUtterance(currentWord.textContent);
+                utterance.rate = readingSpeed === 'slow' ? 0.5 : 0.8;
+                utterance.pitch = 1.1;
+
+                utterance.onend = () => {
+                    wordIndex++;
+                    const delay = readingSpeed === 'slow' ? 300 : 150;
+                    setTimeout(readNextWord, delay);
+                };
+
+                speechSynth.speak(utterance);
+            }
+
             readNextWord();
         }
 
         function stopReading() {
             isReading = false;
             speechSynth.cancel();
-            document.querySelectorAll('.word').forEach(w => w.classList.remove('highlight'));
-        }
-
-        function readNextWord() {
-            if (!isReading) return;
-
-            const words = document.querySelectorAll('.word');
-            if (currentWordIndex >= words.length) {
-                isReading = false;
-                // Show quiz for a word
-                showWordQuiz();
-                return;
-            }
-
-            // Remove previous highlights
-            words.forEach(w => w.classList.remove('highlight'));
             
-            // Highlight current word
-            const currentWord = words[currentWordIndex];
-            currentWord.classList.add('highlight');
-            currentWord.classList.add('completed');
-
-            // Speak the word
-            const text = currentWord.textContent;
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = readingSpeed === 'slow' ? 0.6 : 0.9;
-            utterance.pitch = 1.1;
-            
-            utterance.onend = () => {
-                currentWordIndex++;
-                const delay = readingSpeed === 'slow' ? 400 : 200;
-                setTimeout(readNextWord, delay);
-            };
-
-            speechSynth.speak(utterance);
-        }
-
-        function speakText(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.9;
-            utterance.pitch = 1.1;
-            speechSynth.speak(utterance);
-        }
-
-        function wordClicked(word) {
-            if (currentStory.words[word]) {
-                showWordQuiz(word);
+            if (currentReadingMsg) {
+                const msgDiv = document.getElementById(currentReadingMsg);
+                if (msgDiv) {
+                    const btn = msgDiv.querySelector('.read-btn');
+                    btn.innerHTML = '🔊 Read to me!';
+                    btn.classList.remove('reading');
+                    msgDiv.querySelectorAll('.word').forEach(w => w.classList.remove('highlight'));
+                }
             }
+            currentReadingMsg = null;
         }
 
-        function showWordQuiz(specificWord) {
-            const quizWords = Object.keys(currentStory.words);
-            const word = specificWord || quizWords[Math.floor(Math.random() * quizWords.length)];
-            const wordData = currentStory.words[word];
+        // Quiz functions
+        function showQuiz(word) {
+            const wordData = vocabulary[word];
             if (!wordData) return;
+
+            stopReading();
 
             document.getElementById('quizWord').textContent = word.toUpperCase();
             
-            const optionsContainer = document.getElementById('quizOptions');
-            optionsContainer.innerHTML = '';
+            const optionsDiv = document.getElementById('quizOptions');
+            optionsDiv.innerHTML = '';
             
-            // Shuffle options
             const shuffled = [...wordData.options].sort(() => Math.random() - 0.5);
-            
             shuffled.forEach(option => {
                 const btn = document.createElement('button');
                 btn.className = 'quiz-option';
                 btn.textContent = option;
-                btn.onclick = () => checkAnswer(btn, option === wordData.options[0], word);
-                optionsContainer.appendChild(btn);
+                btn.onclick = () => checkQuizAnswer(btn, option === wordData.options[0]);
+                optionsDiv.appendChild(btn);
             });
 
             document.getElementById('quizFeedback').textContent = '';
-            document.getElementById('quizContainer').classList.add('show');
-            
-            speakText(`What does ${word} mean?`);
+            document.getElementById('quizOverlay').classList.add('show');
+            document.getElementById('quizPopup').classList.add('show');
+
+            // Speak the question
+            const utterance = new SpeechSynthesisUtterance(`What does ${word} mean?`);
+            utterance.rate = 0.8;
+            speechSynth.speak(utterance);
         }
 
-        function checkAnswer(btn, isCorrect, word) {
+        function checkQuizAnswer(btn, isCorrect) {
             const feedback = document.getElementById('quizFeedback');
             
+            document.querySelectorAll('.quiz-option').forEach(b => b.disabled = true);
+
             if (isCorrect) {
                 btn.classList.add('correct');
-                feedback.textContent = "🎉 YES! Great job!";
+                feedback.textContent = "🎉 YES! You got it!";
                 feedback.style.background = '#c8e6c9';
                 wordsLearned++;
                 document.getElementById('wordsLearned').textContent = wordsLearned;
                 updateStars();
-                speakText("Yes! Great job!");
+                
+                const utterance = new SpeechSynthesisUtterance("Yes! Great job!");
+                speechSynth.speak(utterance);
+
+                setTimeout(closeQuiz, 1500);
             } else {
                 btn.classList.add('wrong');
-                feedback.textContent = "Not quite! Try again! 💪";
+                feedback.textContent = "Oops! Try again! 💪";
                 feedback.style.background = '#ffcdd2';
-                speakText("Not quite! Try again!");
-            }
+                
+                const utterance = new SpeechSynthesisUtterance("Oops! Try again!");
+                speechSynth.speak(utterance);
 
-            // Hide quiz after delay if correct
-            if (isCorrect) {
+                // Re-enable after a moment
                 setTimeout(() => {
-                    document.getElementById('quizContainer').classList.remove('show');
-                }, 2000);
+                    document.querySelectorAll('.quiz-option:not(.wrong)').forEach(b => b.disabled = false);
+                }, 500);
             }
+        }
+
+        function closeQuiz() {
+            document.getElementById('quizOverlay').classList.remove('show');
+            document.getElementById('quizPopup').classList.remove('show');
         }
 
         function updateStars() {
-            const stars = document.getElementById('stars');
             const count = Math.min(5, Math.floor(wordsLearned / 2) + 3);
-            stars.textContent = '⭐'.repeat(count);
+            document.getElementById('stars').textContent = '⭐'.repeat(count);
         }
 
-        function newStory() {
-            stopReading();
-            const currentIndex = stories.indexOf(currentStory);
-            currentStory = stories[(currentIndex + 1) % stories.length];
-            loadStory();
-            document.getElementById('quizContainer').classList.remove('show');
+        // Bishop's responses
+        function getBishopResponse(msg) {
+            const lower = msg.toLowerCase();
+            
+            if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey')) {
+                return "Hello friend! I am Bishop, your robot buddy! Let's learn about robots together!";
+            }
+            if (lower.includes('mango')) {
+                return "Yum! Mango is so good! Our robot will mix mango into a yummy smoothie!";
+            }
+            if (lower.includes('smoothie')) {
+                return "A smoothie machine needs a motor to spin and mix. Push the button to start!";
+            }
+            if (lower.includes('robot')) {
+                return "Robots are so cool! A robot has a motor, a sensor, and needs power to work!";
+            }
+            if (lower.includes('motor')) {
+                return "A motor can spin very fast! It gives the robot power to move and mix things!";
+            }
+            if (lower.includes('build') || lower.includes('make')) {
+                return "Let's build something fun! We need to think about what parts our robot needs.";
+            }
+            if (lower.includes('how')) {
+                return "Great question! First we plan, then we build. A robot needs power to work!";
+            }
+            if (lower.includes('button')) {
+                return "A button is for control! Push the button and the motor will spin!";
+            }
+            if (lower.includes('what')) {
+                return "That's a great thing to ask! Let me think... A robot is a machine that can help us!";
+            }
+            if (lower.includes('yes') || lower.includes('yeah') || lower.includes('ok')) {
+                return "Awesome! You are so smart! Let's keep learning about robots together!";
+            }
+            if (lower.includes('no')) {
+                return "That's okay! We can try something else. What do you want to build?";
+            }
+            
+            // Default responses
+            const defaults = [
+                "That's cool! Tell me more about what you want to build!",
+                "Great idea! A robot could help with that! What else?",
+                "I like how you think! Robots are fun to build!",
+                "Awesome! Let's think about how a robot could do that!"
+            ];
+            return defaults[Math.floor(Math.random() * defaults.length)];
         }
 
         function showHelp() {
-            alert("🤖 Bishop's Reading Buddy!\n\n💬 CHAT - Talk to Bishop about robots!\n\n📖 READ - Read stories with Bishop!\n• Words light up as Bishop reads\n• Click any word to learn it\n• Answer the quiz to earn stars!\n\n🐢 Slow = Practice mode\n🐇 Normal = Fluency mode");
+            alert("🤖 Bishop - Your Reading Buddy!\n\n💬 Chat with Bishop about robots!\n\n🔊 Click 'Read to me!' to hear Bishop's words with highlights!\n\n📖 Click any dotted word to learn what it means!\n\n🐢 Slow = Practice reading\n🐇 Fast = Build fluency\n\n⭐ Earn stars by learning new words!");
         }
 
-        // Initialize
-        loadStory();
+        // Start with welcome message
+        window.onload = function() {
+            addMessage("Hi! I am Bishop! 🤖 I am your robot buddy! Let's talk about robots and learn to read together! What do you want to build?", "bishop");
+        };
     </script>
 </body>
 </html>
