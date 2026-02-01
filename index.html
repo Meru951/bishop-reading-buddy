@@ -634,7 +634,6 @@
             <button class="control-btn active" id="slowBtn" onclick="setSpeed('slow')">📖 Learn</button>
             <button class="control-btn" id="normalBtn" onclick="setSpeed('normal')">🚀 Fast</button>
             <button class="control-btn test-btn" onclick="startTest()">📝 Test Me!</button>
-            <button class="control-btn" onclick="startVoiceTyping()" style="background:#9c27b0;color:white;">🎤 Type!</button>
         </div>
 
         <!-- Chat Area -->
@@ -880,13 +879,7 @@
                 const response = getBishopResponse(text);
                 addMessage(response, 'bishop');
                 
-                // Occasionally prompt to practice typing
-                if (Math.random() > 0.7) {
-                    setTimeout(() => {
-                        speak("Want to practice typing? Click the microphone button and tell me what word to spell!");
-                    }, 1500);
-                }
-            }, 500);
+                }, 500);
         }
 
         function handleKeyPress(e) {
