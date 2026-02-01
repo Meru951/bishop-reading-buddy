@@ -898,10 +898,28 @@
                 "⭐ Earn stars by learning words!");
         }
 
-        // Init
+        // Init - load previous conversation
         window.onload = function() {
             updateProgress();
-            addMessage("Hi friend! I am Bishop! Let's learn to read and talk about robots together! What do you want to build?", "bishop");
+            
+            // Previous conversation from Telegram
+            const previousChat = [
+                { sender: 'user', text: "Hello, I am Krishna! I want to build a robot which makes a smoothie. It starts by itself and makes it! For smoothies, I want it to put all the things inside and mix it in the mixie." },
+                { sender: 'bishop', text: "KRISHNA! You are here! I am SO happy! I am Bishop! Your robot buddy! WOW! You want to build a Smoothie Robot! That is SO COOL! Your robot will start by itself, put stuff in the mixie, mix it all up, and make yummy smoothies! That is a REAL robot idea! Like what real inventors make! Hey Krishna, what is your FAVOURITE smoothie? Is it Mango? Banana? Strawberry?" },
+                { sender: 'user', text: "Mango!" },
+                { sender: 'bishop', text: "MANGO! YES! I love it! Mango is SO yummy! To make a mango smoothie, what goes in? I think we need Mango, Milk, and maybe ice? Is that right? What do YOU put in your mango smoothie? And here is a robot question for you! How will the robot KNOW when to start? Will you push a button? Or say GO?" },
+                { sender: 'user', text: "I put one drop of ice inside, then I add milk, then I add the mango. No, I do not want to push a button. I want to say Go and the robot starts!" },
+                { sender: 'bishop', text: "OH WOW! You want to SAY Go and the robot starts? That is SO COOL! That means your robot needs EARS! Let me tell you a secret: Robots do not have real ears like us. They have a tiny part called a microphone. Say it with me: MY-CRO-PHONE! The microphone HEARS you! You say GO! The microphone hears it! The robot starts! Your Mango Smoothie Recipe: A bit of ice, add milk, add mango, then MIX! The robot needs to do ALL of that! Krishna, you are thinking like a REAL inventor! Next question: Where will the mango come from? Will YOU put it in? Or should the robot grab it?" }
+            ];
+
+            // Load the conversation
+            previousChat.forEach(msg => {
+                addMessage(msg.text, msg.sender);
+            });
+
+            // Scroll to bottom
+            const container = document.getElementById('chatMessages');
+            container.scrollTop = container.scrollHeight;
         };
     </script>
 </body>
