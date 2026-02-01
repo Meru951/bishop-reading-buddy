@@ -2928,8 +2928,11 @@
             
             // Check if we should start on Go tab (from landing page)
             const startTab = localStorage.getItem('startTab');
-            if (startTab === 'go' || window.location.hash === '#go') {
-                switchTab('go');
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabParam = urlParams.get('tab');
+            
+            if (startTab === 'go' || tabParam === 'go' || window.location.hash === '#go') {
+                setTimeout(() => switchTab('go'), 100);
                 localStorage.removeItem('startTab');
             }
             

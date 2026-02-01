@@ -232,7 +232,7 @@
 
         <div class="stones-row">⚫ ⚪ ⚫ ⚪ ⚫</div>
 
-        <a href="index.html#go" class="play-btn" onclick="localStorage.setItem('startTab', 'go');">
+        <a href="index.html?tab=go" class="play-btn" id="playBtn">
             🎯 LET'S PLAY! 🎯
         </a>
 
@@ -242,8 +242,10 @@
     </div>
 
     <script>
-        // Store that we want to start on Go tab
-        localStorage.setItem('startTab', 'go');
+        // Set the flag before navigation
+        document.getElementById('playBtn').addEventListener('click', function(e) {
+            localStorage.setItem('startTab', 'go');
+        });
     </script>
 </body>
 </html>
