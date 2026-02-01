@@ -374,27 +374,83 @@
 
         .mic-btn {
             padding: 12px 16px;
-            font-size: 1.3em;
+            font-size: 1em;
+            font-family: inherit;
             background: var(--green);
             color: var(--white);
             border: none;
-            border-radius: 50%;
+            border-radius: 20px;
             cursor: pointer;
             transition: all 0.2s;
+            font-weight: bold;
         }
 
         .mic-btn:hover {
-            transform: scale(1.1);
+            transform: scale(1.05);
+            background: #43a047;
         }
 
-        .mic-btn.listening {
+        /* Voice Recording Overlay */
+        .voice-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(33, 150, 243, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            border-radius: 16px;
+        }
+
+        .voice-recording {
+            text-align: center;
+            color: white;
+        }
+
+        .pulse-ring {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            margin: 0 auto 20px;
+            animation: pulse-ring 1.5s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.9); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(0.9); opacity: 1; }
+        }
+
+        .mic-icon {
+            font-size: 4em;
+            margin-top: -100px;
+            margin-bottom: 20px;
+        }
+
+        .voice-text {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .stop-btn {
+            padding: 15px 40px;
+            font-size: 1.3em;
+            font-family: inherit;
+            font-weight: bold;
             background: #f44336;
-            animation: pulse 1s infinite;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.15); }
+        .stop-btn:hover {
+            background: #d32f2f;
         }
 
         /* Progress */
@@ -634,14 +690,26 @@
             <button class="control-btn active" id="slowBtn" onclick="setSpeed('slow')">📖 Learn</button>
             <button class="control-btn" id="normalBtn" onclick="setSpeed('normal')">🚀 Fast</button>
             <button class="control-btn test-btn" onclick="startTest()">📝 Test Me!</button>
+            <button class="control-btn" id="guideBtn" onclick="startGuidedTour()" style="background:#ff9800;color:white;">🎓 Teach Me!</button>
         </div>
 
         <!-- Chat Area -->
         <div class="chat-area">
             <div class="chat-messages" id="chatMessages"></div>
+            
+            <!-- Voice Recording Overlay -->
+            <div class="voice-overlay" id="voiceOverlay" style="display:none;">
+                <div class="voice-recording">
+                    <div class="pulse-ring"></div>
+                    <div class="mic-icon">🎤</div>
+                    <div class="voice-text">I'm listening! Talk to me!</div>
+                    <button class="stop-btn" onclick="stopVoiceChat()">✋ STOP</button>
+                </div>
+            </div>
+            
             <div class="chat-input-area">
-                <button class="mic-btn" id="micBtn" onclick="startVoiceChat()">🎤</button>
-                <input type="text" class="chat-input" id="chatInput" placeholder="Tap 🎤 to talk!" onkeypress="handleKeyPress(event)" oninput="checkTyping(event)">
+                <button class="mic-btn" id="micBtn" onclick="startVoiceChat()">🎤 Talk</button>
+                <input type="text" class="chat-input" id="chatInput" placeholder="Tap 🎤 Talk to speak!" onkeypress="handleKeyPress(event)" oninput="checkTyping(event)">
                 <button class="send-btn" onclick="sendMessage()">Send! 🚀</button>
             </div>
             
@@ -823,48 +891,124 @@
         }
 
         // Voice chat - talk to Bishop!
+        let activeRecognition = null;
+
         function startVoiceChat() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 alert("Your browser doesn't support voice input. Try Chrome!");
                 return;
             }
 
+            // Show the overlay
+            document.getElementById('voiceOverlay').style.display = 'flex';
+
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const chatRecognition = new SpeechRecognition();
-            chatRecognition.lang = 'en-US';
-            chatRecognition.continuous = false;
-            chatRecognition.interimResults = false;
+            activeRecognition = new SpeechRecognition();
+            activeRecognition.lang = 'en-US';
+            activeRecognition.continuous = false;
+            activeRecognition.interimResults = false;
 
-            const micBtn = document.getElementById('micBtn');
-            micBtn.classList.add('listening');
-            micBtn.textContent = '👂';
-            
-            // Visual feedback
-            speak("I'm listening!").then(() => {
-                chatRecognition.start();
-            });
+            activeRecognition.start();
 
-            chatRecognition.onresult = function(event) {
+            activeRecognition.onresult = function(event) {
                 const spokenText = event.results[0][0].transcript;
-                micBtn.classList.remove('listening');
-                micBtn.textContent = '🎤';
+                hideVoiceOverlay();
                 
                 // Show what was heard and send it
                 document.getElementById('chatInput').value = spokenText;
                 sendMessage();
             };
 
-            chatRecognition.onerror = function(event) {
-                micBtn.classList.remove('listening');
-                micBtn.textContent = '🎤';
-                speak("I couldn't hear you. Try again!");
+            activeRecognition.onerror = function(event) {
+                hideVoiceOverlay();
+                speak("I couldn't hear you. Tap the microphone to try again!");
             };
 
-            chatRecognition.onend = function() {
-                micBtn.classList.remove('listening');
-                micBtn.textContent = '🎤';
+            activeRecognition.onend = function() {
+                // Only hide if not already hidden
+                if (document.getElementById('voiceOverlay').style.display !== 'none') {
+                    hideVoiceOverlay();
+                }
             };
         }
+
+        function stopVoiceChat() {
+            if (activeRecognition) {
+                activeRecognition.stop();
+                activeRecognition = null;
+            }
+            hideVoiceOverlay();
+        }
+
+        function hideVoiceOverlay() {
+            document.getElementById('voiceOverlay').style.display = 'none';
+        }
+
+        // ===== GUIDED TOUR - Structured Learning =====
+        const guidedCurriculum = [
+            { topic: "intro", message: "Welcome to Robot School! I'm Bishop, your teacher! Today we'll learn how robots work. Ready to start?" },
+            { topic: "parts", message: "Robots have 4 main parts: 1) SENSORS to feel the world, 2) A BRAIN to think, 3) MOTORS to move, 4) BATTERIES for power. Let's learn about each one!" },
+            { topic: "sensors", message: "First: SENSORS! These are like robot eyes and ears. A CAMERA sees things. A MICROPHONE hears sounds. A TOUCH sensor feels bumps. What do YOUR eyes and ears do?" },
+            { topic: "brain", message: "Next: The BRAIN! A robot's brain is a tiny computer chip. It thinks really fast - millions of times per second! It reads the sensors and decides what to do." },
+            { topic: "program", message: "The brain runs PROGRAMS - instructions that tell it what to do. Like: IF you see red, THEN stop. IF you see green, THEN go. That's how robots make decisions!" },
+            { topic: "motors", message: "Now: MOTORS! Motors turn electricity into spinning. They can spin wheels, wave arms, or turn propellers! Motors make robots MOVE!" },
+            { topic: "gears", message: "Motors work with GEARS - wheels with teeth! Big gear + small gear together can make things spin faster OR stronger. Bicycles use gears too!" },
+            { topic: "battery", message: "Power time: BATTERIES! They store electricity like a juice box stores juice. When empty, you charge them up. Without batteries, robots can't work!" },
+            { topic: "circuit", message: "Electricity flows through CIRCUITS - paths made of wires. It goes from battery, through wires, to motors, and back. A complete loop!" },
+            { topic: "drones", message: "Cool robot type: DRONES! They fly with 4 spinning propellers. Spin faster = go up. Spin slower = go down. Different speeds = turn and move!" },
+            { topic: "cars", message: "Another cool robot: SELF-DRIVING CARS! They use cameras to see the road, and their brain decides when to stop, go, or turn. Like a super careful driver!" },
+            { topic: "arms", message: "Factory ROBOT ARMS can grab and move things! They have joints like your elbow and shoulder. Each joint has a motor. They build cars and phones!" },
+            { topic: "project", message: "Now YOU know about robots! Sensors feel, brains think, motors move, batteries power. Want to imagine building your own robot? What would it do?" },
+            { topic: "complete", message: "🎉 You finished Robot School! You learned about sensors, brains, motors, gears, batteries, circuits, drones, cars, and robot arms! You're a robot expert now!" }
+        ];
+
+        let guidedStep = 0;
+        let guidedMode = false;
+
+        function startGuidedTour() {
+            guidedMode = true;
+            guidedStep = 0;
+            document.getElementById('guideBtn').textContent = '⏭️ Next!';
+            document.getElementById('guideBtn').style.background = '#4caf50';
+            
+            // Show first lesson
+            const lesson = guidedCurriculum[guidedStep];
+            addMessage(lesson.message, 'bishop');
+            speak(lesson.message);
+        }
+
+        function nextGuidedStep() {
+            guidedStep++;
+            
+            if (guidedStep >= guidedCurriculum.length) {
+                // Complete!
+                guidedMode = false;
+                document.getElementById('guideBtn').textContent = '🎓 Teach Me!';
+                document.getElementById('guideBtn').style.background = '#ff9800';
+                guidedStep = 0;
+                return;
+            }
+            
+            const lesson = guidedCurriculum[guidedStep];
+            addMessage(lesson.message, 'bishop');
+            speak(lesson.message);
+            
+            // Update button for last step
+            if (guidedStep === guidedCurriculum.length - 1) {
+                document.getElementById('guideBtn').textContent = '🎉 Finish!';
+            }
+        }
+
+        // Update the guide button click handler
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('guideBtn').onclick = function() {
+                if (guidedMode) {
+                    nextGuidedStep();
+                } else {
+                    startGuidedTour();
+                }
+            };
+        });
 
         // Send message
         function sendMessage() {
