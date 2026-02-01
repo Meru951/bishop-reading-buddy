@@ -3,782 +3,1069 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bishop - Memory Match!</title>
+    <title>Bishop - Let's Play Solitaire!</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         body {
             font-family: 'Comic Sans MS', 'Chalkboard', cursive, sans-serif;
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            background: linear-gradient(135deg, #1e5631 0%, #2d7a46 100%);
             min-height: 100vh;
-            padding: 15px;
+            padding: 10px;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 450px;
-            margin: 0 auto;
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            color: white;
         }
 
-        /* Intro Screen */
-        .intro-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .title {
+            font-size: 1.4em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .help-btn {
+            background: #f39c12;
+            border: none;
+            color: white;
+            font-size: 1.2em;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        /* Bishop helper */
+        .bishop-helper {
+            background: white;
+            border-radius: 20px;
+            padding: 12px 18px;
+            margin: 10px auto;
+            max-width: 500px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            z-index: 200;
-            padding: 20px;
+            gap: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
         }
 
-        .intro-card {
-            background: white;
-            border-radius: 30px;
-            padding: 25px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-
-        .intro-bishop {
-            font-size: 4em;
-            margin-bottom: 10px;
+        .bishop-avatar {
+            font-size: 2.5em;
             animation: bounce 1s infinite;
         }
 
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .intro-title {
-            font-size: 1.8em;
-            color: #8e44ad;
-            margin-bottom: 20px;
-        }
-
-        .intro-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 12px;
-            text-align: left;
-        }
-
-        .intro-icon {
-            font-size: 2.2em;
-            min-width: 45px;
-            text-align: center;
-        }
-
-        .intro-text {
-            font-size: 1.1em;
-            line-height: 1.4;
-            color: #2c3e50;
-        }
-
-        .intro-text strong {
-            color: #8e44ad;
-        }
-
-        /* Animated Example */
-        .intro-example {
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        .example-title {
-            font-weight: bold;
-            color: white;
-            margin-bottom: 15px;
-            font-size: 1.1em;
-        }
-
-        .example-cards {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .example-card {
-            width: 70px;
-            height: 90px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5em;
-            transition: all 0.5s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        .example-card.facedown {
-            background: linear-gradient(135deg, #1a5276, #154360);
-            color: white;
-        }
-
-        .example-card.faceup {
-            background: white;
-        }
-
-        .example-card.matched {
-            background: #2ecc71;
-            transform: scale(1.1);
-        }
-
-        .example-caption {
-            color: white;
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-
-        .intro-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-            margin-top: 10px;
-        }
-
-        .intro-btn {
-            padding: 18px 40px;
-            font-size: 1.4em;
-            font-family: inherit;
-            font-weight: bold;
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
-            color: white;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.4);
-            transition: all 0.3s;
-        }
-
-        .intro-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .intro-btn-small {
-            padding: 10px 20px;
-            font-size: 1em;
-            font-family: inherit;
-            background: #95a5a6;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .intro-btn-small:hover {
-            background: #7f8c8d;
-        }
-
-        /* Game Screen */
-        .game-screen {
-            display: none;
-        }
-
-        .bishop-chat {
-            background: white;
-            border-radius: 25px;
-            padding: 15px 20px;
-            margin-bottom: 15px;
-            position: relative;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-        }
-
-        .bishop-chat::after {
-            content: '';
-            position: absolute;
-            bottom: -15px;
-            left: 30px;
-            border: 15px solid transparent;
-            border-top-color: white;
-            border-bottom: 0;
-        }
-
-        .bishop-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
-
-        .bishop-avatar {
-            font-size: 2em;
-        }
-
-        .bishop-name {
-            font-weight: bold;
-            color: #8e44ad;
-            font-size: 1.1em;
+            50% { transform: translateY(-5px); }
         }
 
         .bishop-message {
-            font-size: 1.2em;
-            line-height: 1.4;
+            font-size: 1.1em;
             color: #2c3e50;
+            line-height: 1.4;
         }
 
-        .sound-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #8e44ad;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 1.2em;
-            cursor: pointer;
-        }
-
-        /* Game Area */
-        .game-area {
-            background: linear-gradient(135deg, #2c3e50, #34495e);
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .game-stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 15px;
-            color: white;
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-
-        .stat {
-            background: rgba(255,255,255,0.1);
-            padding: 8px 15px;
-            border-radius: 20px;
-        }
-
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            max-width: 320px;
+        /* Game area */
+        .game-container {
+            max-width: 700px;
             margin: 0 auto;
         }
 
-        .card {
-            aspect-ratio: 3/4;
-            border-radius: 12px;
+        /* Top row: deck + foundations */
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .deck-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        .foundations {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Card spots */
+        .card-spot {
+            width: 60px;
+            height: 84px;
+            border: 3px dashed rgba(255,255,255,0.4);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5em;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-size: 1.8em;
+            color: rgba(255,255,255,0.5);
         }
 
-        .card.facedown {
-            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+        .card-spot.foundation {
+            background: rgba(255,255,255,0.1);
         }
 
-        .card.facedown::after {
-            content: '❓';
-            font-size: 0.8em;
+        .card-spot.foundation.complete {
+            background: rgba(46, 204, 113, 0.3);
+            border-color: #2ecc71;
         }
 
-        .card.faceup {
+        /* Tableau (7 columns) */
+        .tableau {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .column {
+            width: 60px;
+            min-height: 200px;
+            position: relative;
+        }
+
+        /* Cards */
+        .card {
+            width: 60px;
+            height: 84px;
             background: white;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            position: absolute;
+            transition: transform 0.15s, box-shadow 0.15s;
         }
 
-        .card.matched {
-            background: #2ecc71;
-            transform: scale(0.95);
-            cursor: default;
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
         }
 
-        .card.wrong {
-            animation: shake 0.5s;
+        .card.selected {
+            box-shadow: 0 0 0 4px #f1c40f, 0 5px 20px rgba(0,0,0,0.4);
+            transform: translateY(-5px);
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+        .card.hint {
+            animation: hintPulse 0.8s infinite;
         }
 
-        .card:not(.matched):not(.faceup):hover {
-            transform: scale(1.05);
+        @keyframes hintPulse {
+            0%, 100% { box-shadow: 0 0 0 4px #3498db; }
+            50% { box-shadow: 0 0 0 8px rgba(52, 152, 219, 0.5); }
         }
 
-        /* Game Buttons */
+        .card.face-down {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 5px,
+                    rgba(255,255,255,0.1) 5px,
+                    rgba(255,255,255,0.1) 10px
+                );
+        }
+
+        .card.red { color: #e74c3c; }
+        .card.black { color: #2c3e50; }
+
+        .card-rank {
+            font-size: 1.4em;
+        }
+
+        .card-suit {
+            font-size: 1.6em;
+        }
+
+        /* Deck */
+        .deck {
+            position: relative;
+            width: 60px;
+            height: 84px;
+        }
+
+        .deck .card {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .waste {
+            position: relative;
+            width: 60px;
+            height: 84px;
+        }
+
+        /* Buttons */
         .game-buttons {
             display: flex;
             justify-content: center;
             gap: 10px;
-            margin-top: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
         }
 
         .game-btn {
-            padding: 12px 25px;
-            font-size: 1em;
+            padding: 10px 20px;
+            font-size: 1.1em;
             font-family: inherit;
-            font-weight: bold;
             border: none;
             border-radius: 20px;
             cursor: pointer;
             transition: transform 0.2s;
-            text-decoration: none;
-            color: white;
         }
 
         .game-btn:hover {
             transform: scale(1.05);
         }
 
-        .game-btn.new {
+        .game-btn.new-game {
             background: #e74c3c;
-        }
-
-        .game-btn.home {
-            background: #3498db;
-        }
-
-        /* Progress */
-        .progress-bar {
-            background: rgba(255,255,255,0.2);
-            border-radius: 20px;
-            padding: 12px 20px;
-            margin-top: 15px;
-            text-align: center;
             color: white;
-            font-size: 1.1em;
         }
 
-        /* Celebration */
-        .celebration {
+        .game-btn.undo {
+            background: #3498db;
+            color: white;
+        }
+
+        .game-btn.hint {
+            background: #f39c12;
+            color: white;
+        }
+
+        /* Tutorial overlay */
+        .tutorial {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.8);
-            display: none;
+            background: rgba(0,0,0,0.9);
+            display: flex;
             align-items: center;
             justify-content: center;
             z-index: 100;
+            padding: 20px;
         }
 
-        .celebration.show {
-            display: flex;
-        }
-
-        .celebration-content {
+        .tutorial-card {
             background: white;
-            border-radius: 30px;
-            padding: 40px;
+            border-radius: 25px;
+            padding: 25px;
+            max-width: 400px;
             text-align: center;
-            animation: popIn 0.5s ease;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
-        @keyframes popIn {
-            from { transform: scale(0); }
-            50% { transform: scale(1.1); }
-            to { transform: scale(1); }
+        .tutorial-step {
+            display: none;
         }
 
-        .celebration-emoji {
-            font-size: 4em;
+        .tutorial-step.active {
+            display: block;
+        }
+
+        .tutorial-title {
+            font-size: 1.8em;
+            color: #2c3e50;
             margin-bottom: 15px;
         }
 
-        .celebration-text {
-            font-size: 1.8em;
-            color: #2c3e50;
-            margin-bottom: 10px;
+        .tutorial-image {
+            font-size: 4em;
+            margin: 20px 0;
         }
 
-        .celebration-sub {
-            font-size: 1.2em;
-            color: #7f8c8d;
+        .tutorial-text {
+            font-size: 1.3em;
+            color: #555;
+            line-height: 1.6;
             margin-bottom: 20px;
         }
 
-        .celebration-btn {
+        .tutorial-example {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .example-cards {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            font-size: 2em;
+        }
+
+        .tutorial-btn {
             padding: 15px 40px;
-            font-size: 1.2em;
+            font-size: 1.4em;
             font-family: inherit;
             background: #2ecc71;
             color: white;
             border: none;
             border-radius: 25px;
             cursor: pointer;
+            margin: 5px;
+        }
+
+        .tutorial-btn.skip {
+            background: #95a5a6;
+            font-size: 1em;
+            padding: 10px 25px;
+        }
+
+        .dots {
+            margin: 15px 0;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ddd;
+            margin: 0 5px;
+        }
+
+        .dot.active {
+            background: #3498db;
+        }
+
+        /* Win screen */
+        .win-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+        }
+
+        .win-content {
+            text-align: center;
+            color: white;
+        }
+
+        .win-emoji {
+            font-size: 6em;
+            animation: bounce 0.5s infinite;
+        }
+
+        .win-text {
+            font-size: 2.5em;
+            margin: 20px 0;
+            color: #ffd700;
+        }
+
+        /* Responsive */
+        @media (max-width: 500px) {
+            .card, .card-spot {
+                width: 48px;
+                height: 67px;
+            }
+            .card-rank { font-size: 1.1em; }
+            .card-suit { font-size: 1.3em; }
+            .column { width: 48px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- INTRO SCREEN -->
-        <div class="intro-screen" id="introScreen">
-            <div class="intro-card">
-                <div class="intro-bishop">🤖</div>
-                <h1 class="intro-title">Memory Match!</h1>
-                
-                <div class="intro-section">
-                    <div class="intro-icon">🎯</div>
-                    <div class="intro-text">
-                        <strong>What's the goal?</strong><br>
-                        Find all the matching pairs!
-                    </div>
+    <!-- Tutorial -->
+    <div class="tutorial" id="tutorial">
+        <div class="tutorial-card">
+            <!-- Step 1: Welcome -->
+            <div class="tutorial-step active" id="step1">
+                <div class="tutorial-image">🤖🃏</div>
+                <div class="tutorial-title">Let's Learn Solitaire!</div>
+                <div class="tutorial-text">
+                    Hi Krishna! I'm going to teach you a really fun card game!
                 </div>
-                
-                <div class="intro-section">
-                    <div class="intro-icon">👆</div>
-                    <div class="intro-text">
-                        <strong>How do you play?</strong><br>
-                        Tap two cards. If they match, you keep them!
-                    </div>
+                <div class="tutorial-text">
+                    It's called <strong>Solitaire</strong> — a game you play all by yourself!
                 </div>
-                
-                <div class="intro-section">
-                    <div class="intro-icon">🧠</div>
-                    <div class="intro-text">
-                        <strong>The trick?</strong><br>
-                        Remember where you saw each picture!
-                    </div>
-                </div>
+                <button class="tutorial-btn" onclick="nextStep()">Let's Go! →</button>
+                <br><br>
+                <button class="tutorial-btn skip" onclick="skipTutorial()">I know how to play</button>
+            </div>
 
-                <div class="intro-example">
-                    <div class="example-title">Watch how it works!</div>
+            <!-- Step 2: The Goal -->
+            <div class="tutorial-step" id="step2">
+                <div class="tutorial-image">🎯</div>
+                <div class="tutorial-title">The Goal</div>
+                <div class="tutorial-text">
+                    Your job is to sort ALL the cards into <strong>4 piles</strong> — one for each shape!
+                </div>
+                <div class="tutorial-example">
                     <div class="example-cards">
-                        <div class="example-card facedown" id="demo1">❓</div>
-                        <div class="example-card facedown" id="demo2">❓</div>
+                        <span>♠️</span>
+                        <span style="color:#e74c3c">♥️</span>
+                        <span style="color:#e74c3c">♦️</span>
+                        <span>♣️</span>
                     </div>
-                    <div class="example-caption" id="demoCaption">Tap a card to flip it...</div>
+                    <div style="margin-top:10px; color:#666;">Spades, Hearts, Diamonds, Clubs</div>
                 </div>
-                
-                <div class="intro-buttons">
-                    <button class="intro-btn-small" onclick="playIntroNarration()">🔊 Hear it again</button>
-                    <button class="intro-btn" onclick="startGame()">Let's Play! 🎮</button>
+                <div class="tutorial-text">
+                    Each pile starts with <strong>Ace</strong> (the 1) and goes up to <strong>King</strong>!
                 </div>
-            </div>
-        </div>
-
-        <!-- GAME SCREEN -->
-        <div class="game-screen" id="gameScreen">
-            <div class="bishop-chat">
-                <button class="sound-btn" onclick="speakMessage()">🔊</button>
-                <div class="bishop-header">
-                    <span class="bishop-avatar">🤖</span>
-                    <span class="bishop-name">Bishop</span>
+                <div class="dots">
+                    <span class="dot"></span>
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
                 </div>
-                <div class="bishop-message" id="bishopMessage">
-                    Find two cards that are the SAME! Tap a card to flip it!
-                </div>
+                <button class="tutorial-btn" onclick="nextStep()">Got it! →</button>
             </div>
 
-            <div class="game-area">
-                <div class="game-stats">
-                    <div class="stat">🎯 Pairs: <span id="pairsFound">0</span>/8</div>
-                    <div class="stat">👆 Tries: <span id="tries">0</span></div>
+            <!-- Step 3: Building Stacks -->
+            <div class="tutorial-step" id="step3">
+                <div class="tutorial-image">📚</div>
+                <div class="tutorial-title">Building Stacks</div>
+                <div class="tutorial-text">
+                    On the table, you stack cards going <strong>DOWN</strong> in number...
                 </div>
-
-                <div class="card-grid" id="cardGrid"></div>
-
-                <div class="game-buttons">
-                    <button class="game-btn new" onclick="newGame()">🔄 New Game</button>
-                    <a href="krishna.html" class="game-btn home">🏠 Home</a>
+                <div class="tutorial-example">
+                    <div style="font-size:1.5em; color:#2c3e50;">
+                        King → Queen → Jack → 10 → 9 → 8...
+                    </div>
                 </div>
+                <div class="tutorial-text">
+                    And you <strong>switch colors!</strong><br>
+                    Red goes on Black. Black goes on Red.
+                </div>
+                <div class="tutorial-example">
+                    <div class="example-cards">
+                        <span>🂮</span>
+                        <span style="color:#e74c3c">Q♥</span>
+                        <span>J♠</span>
+                    </div>
+                    <div style="margin-top:10px; color:#666;">Black King, Red Queen, Black Jack ✓</div>
+                </div>
+                <div class="dots">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                </div>
+                <button class="tutorial-btn" onclick="nextStep()">I understand! →</button>
             </div>
 
-            <div class="progress-bar">
-                ⭐ You're doing great, Krishna! ⭐
+            <!-- Step 4: Let's Play -->
+            <div class="tutorial-step" id="step4">
+                <div class="tutorial-image">🎮</div>
+                <div class="tutorial-title">How to Play</div>
+                <div class="tutorial-text">
+                    <strong>Tap a card</strong> to pick it up.<br>
+                    <strong>Tap where you want it</strong> to put it down.
+                </div>
+                <div class="tutorial-text">
+                    <strong>Tap the deck</strong> (top-left) to get new cards!
+                </div>
+                <div class="tutorial-text">
+                    If you get stuck, tap <strong>"Hint"</strong> and I'll help you! 💡
+                </div>
+                <div class="dots">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot active"></span>
+                </div>
+                <button class="tutorial-btn" onclick="startGame()">Let's Play! 🎉</button>
             </div>
         </div>
     </div>
 
-    <!-- Celebration -->
-    <div class="celebration" id="celebration">
-        <div class="celebration-content">
-            <div class="celebration-emoji">🎉</div>
-            <div class="celebration-text" id="celebText">You found them all!</div>
-            <div class="celebration-sub" id="celebSub">Amazing memory!</div>
-            <button class="celebration-btn" onclick="playAgain()">Play Again! 🔄</button>
+    <!-- Header -->
+    <div class="header">
+        <button class="back-btn" onclick="location.href='krishna.html'">←</button>
+        <div class="title">🃏 Solitaire</div>
+        <button class="help-btn" onclick="showTutorial()">Help</button>
+    </div>
+
+    <!-- Bishop helper -->
+    <div class="bishop-helper">
+        <div class="bishop-avatar">🤖</div>
+        <div class="bishop-message" id="bishopMessage">
+            Tap a card to pick it up, then tap where you want to put it!
+        </div>
+    </div>
+
+    <!-- Game container -->
+    <div class="game-container">
+        <!-- Top row: deck and foundations -->
+        <div class="top-row">
+            <div class="deck-area">
+                <div class="deck" id="deck" onclick="drawCard()">
+                    <div class="card face-down"></div>
+                </div>
+                <div class="waste" id="waste"></div>
+            </div>
+            <div class="foundations" id="foundations">
+                <div class="card-spot foundation" data-suit="spades" onclick="foundationClick(0)">♠</div>
+                <div class="card-spot foundation" data-suit="hearts" onclick="foundationClick(1)">♥</div>
+                <div class="card-spot foundation" data-suit="diamonds" onclick="foundationClick(2)">♦</div>
+                <div class="card-spot foundation" data-suit="clubs" onclick="foundationClick(3)">♣</div>
+            </div>
+        </div>
+
+        <!-- Tableau (7 columns) -->
+        <div class="tableau" id="tableau"></div>
+
+        <!-- Buttons -->
+        <div class="game-buttons">
+            <button class="game-btn undo" onclick="undo()">↩ Undo</button>
+            <button class="game-btn hint" onclick="showHint()">💡 Hint</button>
+            <button class="game-btn new-game" onclick="newGame()">🔄 New Game</button>
+        </div>
+    </div>
+
+    <!-- Win screen -->
+    <div class="win-screen" id="winScreen">
+        <div class="win-content">
+            <div class="win-emoji">🎉👑🎉</div>
+            <div class="win-text">YOU WON!</div>
+            <button class="tutorial-btn" onclick="newGame()">Play Again!</button>
         </div>
     </div>
 
     <script>
-        // Game state
-        let cards = [];
-        let flipped = [];
-        let matched = [];
-        let tries = 0;
-        let canFlip = true;
-        let lastMessage = '';
+        // Card data
+        const suits = ['spades', 'hearts', 'diamonds', 'clubs'];
+        const suitSymbols = { spades: '♠', hearts: '♥', diamonds: '♦', clubs: '♣' };
+        const suitColors = { spades: 'black', hearts: 'red', diamonds: 'red', clubs: 'black' };
+        const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
-        const emojis = ['🐶', '🐱', '🐸', '🦁', '🐰', '🐼', '🦊', '🐨'];
+        let deck = [];
+        let waste = [];
+        let foundations = [[], [], [], []]; // 4 foundation piles
+        let tableau = [[], [], [], [], [], [], []]; // 7 columns
+        let selected = null; // { source, pile, cardIndex }
+        let moveHistory = [];
+        let tutorialStep = 1;
 
-        let introPlayed = false;
+        const messages = {
+            welcome: "Tap a card to pick it up, then tap where you want to put it!",
+            selected: "Good! Now tap where you want to put this card!",
+            moved: "Great move! 🌟",
+            invalid: "That card can't go there. Try somewhere else!",
+            hint: "I'll show you a good move! Look for the glowing card!",
+            noMoves: "Tap the deck to get more cards!",
+            ace: "An Ace! Put it in one of the top spots! ♠♥♦♣",
+            king: "A King! It can go in an empty column!",
+            stuck: "Hmm, try tapping the deck for more cards!",
+            awesome: ["Amazing! 🌟", "Fantastic! ⭐", "You're so smart! 🧠", "Great job! 🎯", "Wonderful! 🌈"][Math.floor(Math.random() * 5)]
+        };
 
-        // Intro animation
-        function runIntroDemo() {
-            const card1 = document.getElementById('demo1');
-            const card2 = document.getElementById('demo2');
-            const caption = document.getElementById('demoCaption');
+        function say(msg) {
+            document.getElementById('bishopMessage').textContent = msg;
+        }
 
-            // Reset
-            card1.className = 'example-card facedown';
-            card1.textContent = '❓';
-            card2.className = 'example-card facedown';
-            card2.textContent = '❓';
-
-            // Play audio intro ONCE
-            if (!introPlayed) {
-                introPlayed = true;
-                playIntroNarration();
+        function createDeck() {
+            let cards = [];
+            for (let suit of suits) {
+                for (let i = 0; i < 13; i++) {
+                    cards.push({ suit, rank: i, faceUp: false });
+                }
             }
-
-            // Step 1: Flip first card
-            setTimeout(() => {
-                card1.className = 'example-card faceup';
-                card1.textContent = '🐶';
-                caption.textContent = "It's a dog! 🐶";
-            }, 1000);
-
-            // Step 2: Flip second card
-            setTimeout(() => {
-                card2.className = 'example-card faceup';
-                card2.textContent = '🐶';
-                caption.textContent = "Another dog! They MATCH!";
-            }, 2500);
-
-            // Step 3: Match!
-            setTimeout(() => {
-                card1.className = 'example-card matched';
-                card2.className = 'example-card matched';
-                caption.textContent = "🎉 MATCH! You keep them!";
-            }, 4000);
-
-            // Repeat
-            setTimeout(runIntroDemo, 6000);
-        }
-
-        function playIntroNarration() {
-            // Detailed, friendly narration - explain everything
-            const narration = `
-                Hey Krishna! Let's play Memory Match!
-                This game is all about remembering where things are.
-                See all these cards? They're face down, so you can't see the pictures.
-                But here's a secret. There are two dogs hiding. Two cats hiding. Two of everything!
-                Your job is to find the two that look the same. When two cards look the same, that's called a match!
-                Here's how you play.
-                Tap one card. It flips over and shows you the picture.
-                Then tap another card. It flips over too.
-                Now look at both pictures. Are they the same?
-                If yes, you found a match! Those cards stay face up. You got them!
-                If no, they're different. They flip back over and hide again.
-                But here's the secret. Try to remember what you saw and where it was!
-                If you see a dog, remember where it is. Because there's another dog hiding somewhere!
-                When you find both dogs, that's a match!
-                Find all the pairs and you win the game!
-                Ready to try? Tap the green button!
-            `;
-            speakNaturally(narration);
-        }
-
-        function speakNaturally(text) {
-            const sentences = text.trim().split(/[.!?]+/).filter(s => s.trim());
-            let delay = 0;
-            
-            sentences.forEach((sentence, i) => {
-                setTimeout(() => {
-                    const utterance = new SpeechSynthesisUtterance(sentence.trim());
-                    utterance.rate = 1.0;  // Normal speed
-                    utterance.pitch = 1.1;  // Friendly tone
-                    
-                    const voices = speechSynthesis.getVoices();
-                    const goodVoice = voices.find(v => 
-                        v.name.includes('Samantha') || 
-                        v.name.includes('Daniel') || 
-                        v.name.includes('Google') ||
-                        v.lang.startsWith('en')
-                    );
-                    if (goodVoice) utterance.voice = goodVoice;
-                    
-                    speechSynthesis.speak(utterance);
-                }, delay);
-                
-                delay += (sentence.length * 50) + 300;
-            });
-        }
-
-        // Start intro animation
-        runIntroDemo();
-
-        function startGame() {
-            document.getElementById('introScreen').style.display = 'none';
-            document.getElementById('gameScreen').style.display = 'block';
-            newGame();
-            speak("Find two cards that match! Tap a card to flip it!");
-        }
-
-        function newGame() {
-            // Create pairs
-            cards = [...emojis, ...emojis];
             // Shuffle
             for (let i = cards.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [cards[i], cards[j]] = [cards[j], cards[i]];
             }
-            
-            flipped = [];
-            matched = [];
-            tries = 0;
-            canFlip = true;
-            
-            document.getElementById('pairsFound').textContent = '0';
-            document.getElementById('tries').textContent = '0';
-            
-            renderCards();
-            say("Find the matching pairs! Tap any card to start!");
+            return cards;
         }
 
-        function renderCards() {
-            const grid = document.getElementById('cardGrid');
-            grid.innerHTML = '';
+        function deal() {
+            deck = createDeck();
+            waste = [];
+            foundations = [[], [], [], []];
+            tableau = [[], [], [], [], [], [], []];
+            moveHistory = [];
 
-            cards.forEach((emoji, index) => {
-                const card = document.createElement('div');
-                card.className = 'card facedown';
-                card.dataset.index = index;
-                
-                if (matched.includes(index)) {
-                    card.className = 'card matched';
-                    card.textContent = emoji;
-                } else if (flipped.includes(index)) {
-                    card.className = 'card faceup';
-                    card.textContent = emoji;
+            // Deal to tableau
+            for (let col = 0; col < 7; col++) {
+                for (let row = 0; row <= col; row++) {
+                    let card = deck.pop();
+                    card.faceUp = (row === col); // Only top card face up
+                    tableau[col].push(card);
                 }
-                
-                card.onclick = () => flipCard(index);
-                grid.appendChild(card);
+            }
+
+            render();
+            say(messages.welcome);
+        }
+
+        function render() {
+            renderDeck();
+            renderWaste();
+            renderFoundations();
+            renderTableau();
+            checkWin();
+        }
+
+        function renderDeck() {
+            const deckEl = document.getElementById('deck');
+            deckEl.innerHTML = '';
+            if (deck.length > 0) {
+                const card = document.createElement('div');
+                card.className = 'card face-down';
+                deckEl.appendChild(card);
+            } else {
+                // Show refresh icon to reset waste to deck
+                deckEl.innerHTML = '<div class="card-spot" style="border-style:solid;font-size:2em;">🔄</div>';
+            }
+        }
+
+        function renderWaste() {
+            const wasteEl = document.getElementById('waste');
+            wasteEl.innerHTML = '';
+            if (waste.length > 0) {
+                const card = waste[waste.length - 1];
+                const cardEl = createCardElement(card, 0);
+                cardEl.onclick = () => selectCard('waste', 0, waste.length - 1);
+                wasteEl.appendChild(cardEl);
+            }
+        }
+
+        function renderFoundations() {
+            const spots = document.querySelectorAll('.foundation');
+            spots.forEach((spot, i) => {
+                spot.innerHTML = '';
+                if (foundations[i].length > 0) {
+                    const card = foundations[i][foundations[i].length - 1];
+                    const cardEl = createCardElement(card, 0);
+                    cardEl.style.position = 'relative';
+                    spot.appendChild(cardEl);
+                    spot.classList.toggle('complete', foundations[i].length === 13);
+                } else {
+                    spot.textContent = suitSymbols[suits[i]];
+                }
             });
         }
 
-        function flipCard(index) {
-            if (!canFlip) return;
-            if (flipped.includes(index)) return;
-            if (matched.includes(index)) return;
+        function renderTableau() {
+            const tableauEl = document.getElementById('tableau');
+            tableauEl.innerHTML = '';
 
-            flipped.push(index);
-            renderCards();
+            for (let col = 0; col < 7; col++) {
+                const column = document.createElement('div');
+                column.className = 'column';
+                column.onclick = (e) => {
+                    if (e.target === column) columnClick(col);
+                };
 
-            // Speak what they found
-            const names = {
-                '🐶': 'dog', '🐱': 'cat', '🐸': 'frog', '🦁': 'lion',
-                '🐰': 'bunny', '🐼': 'panda', '🦊': 'fox', '🐨': 'koala'
-            };
-            speak(names[cards[index]] || 'card');
+                const pile = tableau[col];
+                pile.forEach((card, i) => {
+                    const cardEl = createCardElement(card, i * 25);
+                    cardEl.onclick = (e) => {
+                        e.stopPropagation();
+                        if (card.faceUp) selectCard('tableau', col, i);
+                    };
+                    column.appendChild(cardEl);
+                });
 
-            if (flipped.length === 2) {
-                canFlip = false;
-                tries++;
-                document.getElementById('tries').textContent = tries;
+                tableauEl.appendChild(column);
+            }
+        }
 
-                const [first, second] = flipped;
+        function createCardElement(card, topOffset) {
+            const el = document.createElement('div');
+            el.className = `card ${card.faceUp ? suitColors[card.suit] : 'face-down'}`;
+            el.style.top = topOffset + 'px';
+            
+            if (card.faceUp) {
+                el.innerHTML = `
+                    <div class="card-rank">${ranks[card.rank]}</div>
+                    <div class="card-suit">${suitSymbols[card.suit]}</div>
+                `;
+            }
+            
+            return el;
+        }
 
-                if (cards[first] === cards[second]) {
-                    // Match!
-                    matched.push(first, second);
-                    flipped = [];
-                    canFlip = true;
-                    
-                    document.getElementById('pairsFound').textContent = matched.length / 2;
-                    
-                    setTimeout(() => {
-                        renderCards();
-                        
-                        const cheers = [
-                            "MATCH! Great job! 🎉",
-                            "You found a pair! ⭐",
-                            "Awesome memory! 🧠",
-                            "Yes! They're the same! 👏"
-                        ];
-                        say(cheers[Math.floor(Math.random() * cheers.length)]);
+        function drawCard() {
+            if (deck.length === 0) {
+                // Flip waste back to deck
+                if (waste.length > 0) {
+                    deck = waste.reverse().map(c => ({ ...c, faceUp: false }));
+                    waste = [];
+                    say("Cards shuffled! Tap again to draw.");
+                }
+            } else {
+                const card = deck.pop();
+                card.faceUp = true;
+                waste.push(card);
+                
+                // Helpful hints for special cards
+                if (card.rank === 0) say(messages.ace);
+                else if (card.rank === 12) say(messages.king);
+                else say("New card! Where can it go? 🤔");
+            }
+            clearSelection();
+            render();
+        }
 
-                        // Check for win
-                        if (matched.length === cards.length) {
-                            setTimeout(showWin, 500);
-                        }
-                    }, 300);
-                } else {
-                    // No match
-                    say("Not the same. Remember where they are!");
-                    
-                    setTimeout(() => {
-                        // Mark as wrong briefly
-                        const cardEls = document.querySelectorAll('.card');
-                        cardEls[first].classList.add('wrong');
-                        cardEls[second].classList.add('wrong');
-                    }, 300);
+        function selectCard(source, pile, cardIndex) {
+            // If something is selected, try to move
+            if (selected) {
+                if (source === 'tableau') {
+                    tryMove(pile);
+                }
+                clearSelection();
+                render();
+                return;
+            }
 
-                    setTimeout(() => {
-                        flipped = [];
-                        canFlip = true;
-                        renderCards();
-                    }, 1200);
+            // Select this card
+            selected = { source, pile, cardIndex };
+            
+            // Visual feedback
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(c => c.classList.remove('selected'));
+            
+            // Find and highlight selected card(s)
+            if (source === 'tableau') {
+                const col = document.querySelectorAll('.column')[pile];
+                const colCards = col.querySelectorAll('.card');
+                for (let i = cardIndex; i < tableau[pile].length; i++) {
+                    colCards[i]?.classList.add('selected');
+                }
+            } else if (source === 'waste') {
+                document.querySelector('#waste .card')?.classList.add('selected');
+            }
+
+            say(messages.selected);
+        }
+
+        function clearSelection() {
+            selected = null;
+            document.querySelectorAll('.card').forEach(c => {
+                c.classList.remove('selected');
+                c.classList.remove('hint');
+            });
+        }
+
+        function tryMove(targetCol) {
+            if (!selected) return false;
+
+            const { source, pile, cardIndex } = selected;
+            let cards, card;
+
+            if (source === 'waste') {
+                card = waste[waste.length - 1];
+                cards = [card];
+            } else if (source === 'tableau') {
+                cards = tableau[pile].slice(cardIndex);
+                card = cards[0];
+            } else {
+                return false;
+            }
+
+            const targetPile = tableau[targetCol];
+            
+            // Check if move is valid
+            if (targetPile.length === 0) {
+                // Empty column - only Kings
+                if (card.rank !== 12) {
+                    say("Only Kings can go in empty spots!");
+                    return false;
+                }
+            } else {
+                const topCard = targetPile[targetPile.length - 1];
+                if (!topCard.faceUp) return false;
+                
+                // Must be opposite color and one rank lower
+                const isOppositeColor = suitColors[card.suit] !== suitColors[topCard.suit];
+                const isOneRankLower = card.rank === topCard.rank - 1;
+                
+                if (!isOppositeColor) {
+                    say("Colors must alternate! Red on Black, Black on Red.");
+                    return false;
+                }
+                if (!isOneRankLower) {
+                    say("Card must be one number lower!");
+                    return false;
                 }
             }
-        }
 
-        function showWin() {
-            document.getElementById('celebration').classList.add('show');
-            
-            let rating = '';
-            if (tries <= 12) {
-                rating = "PERFECT memory! 🌟🌟🌟";
-            } else if (tries <= 16) {
-                rating = "Great memory! 🌟🌟";
+            // Save for undo
+            saveState();
+
+            // Do the move
+            if (source === 'waste') {
+                waste.pop();
             } else {
-                rating = "Good job! 🌟";
+                tableau[pile].splice(cardIndex);
+                // Flip the new top card
+                if (tableau[pile].length > 0) {
+                    tableau[pile][tableau[pile].length - 1].faceUp = true;
+                }
             }
+
+            cards.forEach(c => targetPile.push(c));
             
-            document.getElementById('celebSub').textContent = rating + ` (${tries} tries)`;
-            speak("You found all the pairs! Amazing!");
+            say(messages.awesome);
+            return true;
         }
 
-        function playAgain() {
-            document.getElementById('celebration').classList.remove('show');
-            newGame();
+        function columnClick(col) {
+            if (selected) {
+                tryMove(col);
+                clearSelection();
+                render();
+            }
         }
 
-        function say(message) {
-            document.getElementById('bishopMessage').textContent = message;
-            lastMessage = message;
+        function foundationClick(foundationIndex) {
+            if (!selected) return;
+
+            const { source, pile, cardIndex } = selected;
+            let card;
+
+            if (source === 'waste') {
+                card = waste[waste.length - 1];
+            } else if (source === 'tableau') {
+                // Can only move single cards to foundation
+                if (cardIndex !== tableau[pile].length - 1) {
+                    say("Only the top card can go to the foundation!");
+                    clearSelection();
+                    return;
+                }
+                card = tableau[pile][cardIndex];
+            } else {
+                clearSelection();
+                return;
+            }
+
+            const foundation = foundations[foundationIndex];
+            const expectedSuit = suits[foundationIndex];
+
+            // Check if valid
+            if (card.suit !== expectedSuit) {
+                say(`This spot is for ${suitSymbols[expectedSuit]} cards only!`);
+                clearSelection();
+                return;
+            }
+
+            const expectedRank = foundation.length; // 0 for Ace, 1 for 2, etc.
+            if (card.rank !== expectedRank) {
+                if (foundation.length === 0) {
+                    say("Start with the Ace (1)!");
+                } else {
+                    say(`You need a ${ranks[expectedRank]} here!`);
+                }
+                clearSelection();
+                return;
+            }
+
+            // Save for undo
+            saveState();
+
+            // Do the move
+            if (source === 'waste') {
+                waste.pop();
+            } else {
+                tableau[pile].pop();
+                if (tableau[pile].length > 0) {
+                    tableau[pile][tableau[pile].length - 1].faceUp = true;
+                }
+            }
+
+            foundation.push(card);
+            say("Perfect! 🌟");
+            
+            clearSelection();
+            render();
         }
 
-        function speakMessage() {
-            speak(lastMessage);
+        function saveState() {
+            moveHistory.push({
+                deck: JSON.parse(JSON.stringify(deck)),
+                waste: JSON.parse(JSON.stringify(waste)),
+                foundations: JSON.parse(JSON.stringify(foundations)),
+                tableau: JSON.parse(JSON.stringify(tableau))
+            });
+            // Limit history
+            if (moveHistory.length > 50) moveHistory.shift();
         }
 
-        function speak(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.9;
-            speechSynthesis.speak(utterance);
+        function undo() {
+            if (moveHistory.length === 0) {
+                say("Nothing to undo!");
+                return;
+            }
+            const state = moveHistory.pop();
+            deck = state.deck;
+            waste = state.waste;
+            foundations = state.foundations;
+            tableau = state.tableau;
+            clearSelection();
+            render();
+            say("Undone! Try a different move.");
+        }
+
+        function showHint() {
+            clearSelection();
+            
+            // Look for a valid move
+            // 1. Check waste card
+            if (waste.length > 0) {
+                const card = waste[waste.length - 1];
+                
+                // Can it go to foundation?
+                const fIndex = suits.indexOf(card.suit);
+                if (foundations[fIndex].length === card.rank) {
+                    document.querySelector('#waste .card')?.classList.add('hint');
+                    say("This card can go to the foundation! ⬆️");
+                    return;
+                }
+                
+                // Can it go to tableau?
+                for (let col = 0; col < 7; col++) {
+                    if (canPlaceOn(card, col)) {
+                        document.querySelector('#waste .card')?.classList.add('hint');
+                        say("Try moving this card! 👆");
+                        return;
+                    }
+                }
+            }
+
+            // 2. Check tableau cards
+            for (let col = 0; col < 7; col++) {
+                const pile = tableau[col];
+                for (let i = 0; i < pile.length; i++) {
+                    const card = pile[i];
+                    if (!card.faceUp) continue;
+
+                    // Can it go to foundation?
+                    if (i === pile.length - 1) {
+                        const fIndex = suits.indexOf(card.suit);
+                        if (foundations[fIndex].length === card.rank) {
+                            const colEl = document.querySelectorAll('.column')[col];
+                            colEl.querySelectorAll('.card')[i]?.classList.add('hint');
+                            say("This card can go up to the foundation! ⬆️");
+                            return;
+                        }
+                    }
+
+                    // Can it go to another column?
+                    for (let targetCol = 0; targetCol < 7; targetCol++) {
+                        if (targetCol === col) continue;
+                        if (canPlaceOn(card, targetCol)) {
+                            // Only suggest if it reveals a card or is useful
+                            if (i > 0 && !pile[i - 1].faceUp) {
+                                const colEl = document.querySelectorAll('.column')[col];
+                                colEl.querySelectorAll('.card')[i]?.classList.add('hint');
+                                say("Try moving this stack! It will reveal a new card! 🔓");
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // No good moves found
+            if (deck.length > 0) {
+                say("Tap the deck to get more cards! 🃏");
+            } else if (waste.length > 0) {
+                say("Tap the deck to reshuffle! 🔄");
+            } else {
+                say("Hmm, this is tricky! Keep looking... 🔍");
+            }
+        }
+
+        function canPlaceOn(card, targetCol) {
+            const targetPile = tableau[targetCol];
+            if (targetPile.length === 0) {
+                return card.rank === 12; // King
+            }
+            const topCard = targetPile[targetPile.length - 1];
+            if (!topCard.faceUp) return false;
+            const isOppositeColor = suitColors[card.suit] !== suitColors[topCard.suit];
+            const isOneRankLower = card.rank === topCard.rank - 1;
+            return isOppositeColor && isOneRankLower;
+        }
+
+        function checkWin() {
+            const won = foundations.every(f => f.length === 13);
+            if (won) {
+                document.getElementById('winScreen').style.display = 'flex';
+            }
+        }
+
+        function newGame() {
+            document.getElementById('winScreen').style.display = 'none';
+            deal();
+        }
+
+        // Tutorial navigation
+        function nextStep() {
+            document.getElementById('step' + tutorialStep).classList.remove('active');
+            tutorialStep++;
+            document.getElementById('step' + tutorialStep).classList.add('active');
+        }
+
+        function skipTutorial() {
+            document.getElementById('tutorial').style.display = 'none';
+            deal();
+        }
+
+        function startGame() {
+            document.getElementById('tutorial').style.display = 'none';
+            deal();
+        }
+
+        function showTutorial() {
+            tutorialStep = 1;
+            document.querySelectorAll('.tutorial-step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step1').classList.add('active');
+            document.getElementById('tutorial').style.display = 'flex';
+        }
+
+        // Check if returning player
+        if (localStorage.getItem('solitairePlayed')) {
+            document.getElementById('tutorial').style.display = 'none';
+            deal();
+        }
+
+        // Mark as played after first game
+        function markPlayed() {
+            localStorage.setItem('solitairePlayed', 'true');
         }
     </script>
 </body>
