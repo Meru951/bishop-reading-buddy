@@ -146,6 +146,14 @@
             font-weight: bold;
         }
 
+        .intro-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
         .intro-btn {
             padding: 18px 40px;
             font-size: 1.4em;
@@ -158,11 +166,26 @@
             cursor: pointer;
             box-shadow: 0 5px 20px rgba(46, 204, 113, 0.4);
             transition: all 0.3s;
-            margin-top: 10px;
         }
 
         .intro-btn:hover {
             transform: scale(1.05);
+        }
+
+        .intro-btn-small {
+            padding: 10px 20px;
+            font-size: 1em;
+            font-family: inherit;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .intro-btn-small:hover {
+            background: #7f8c8d;
         }
 
         /* Game Screen */
@@ -448,7 +471,10 @@
                     <div class="example-caption" id="demoCaption">Tap a card to flip it...</div>
                 </div>
                 
-                <button class="intro-btn" onclick="startGame()">Let's Play! 🎮</button>
+                <div class="intro-buttons">
+                    <button class="intro-btn-small" onclick="playIntroNarration()">🔊 Hear it again</button>
+                    <button class="intro-btn" onclick="startGame()">Let's Play! 🎮</button>
+                </div>
             </div>
         </div>
 
@@ -506,6 +532,8 @@
 
         const emojis = ['🐶', '🐱', '🐸', '🦁', '🐰', '🐼', '🦊', '🐨'];
 
+        let introPlayed = false;
+
         // Intro animation
         function runIntroDemo() {
             const card1 = document.getElementById('demo1');
@@ -517,6 +545,12 @@
             card1.textContent = '❓';
             card2.className = 'example-card facedown';
             card2.textContent = '❓';
+
+            // Play audio intro ONCE
+            if (!introPlayed) {
+                introPlayed = true;
+                playIntroNarration();
+            }
 
             // Step 1: Flip first card
             setTimeout(() => {
@@ -541,6 +575,50 @@
 
             // Repeat
             setTimeout(runIntroDemo, 6000);
+        }
+
+        function playIntroNarration() {
+            // Natural, friendly narration
+            const narration = `
+                Hey Krishna! Let's play Memory Match!
+                This is a really fun game.
+                Your goal is to find all the matching pairs.
+                Here's how you play.
+                You tap a card to flip it over.
+                Then tap another card.
+                If they're the same, you found a match! And you keep them.
+                If they're different, they flip back. But remember where they were!
+                The trick is to use your memory.
+                Find all the pairs and you win!
+                Ready? Tap Let's Play when you want to start!
+            `;
+            speakNaturally(narration);
+        }
+
+        function speakNaturally(text) {
+            const sentences = text.trim().split(/[.!?]+/).filter(s => s.trim());
+            let delay = 0;
+            
+            sentences.forEach((sentence, i) => {
+                setTimeout(() => {
+                    const utterance = new SpeechSynthesisUtterance(sentence.trim());
+                    utterance.rate = 0.85;
+                    utterance.pitch = 1.1;
+                    
+                    const voices = speechSynthesis.getVoices();
+                    const goodVoice = voices.find(v => 
+                        v.name.includes('Samantha') || 
+                        v.name.includes('Daniel') || 
+                        v.name.includes('Google') ||
+                        v.lang.startsWith('en')
+                    );
+                    if (goodVoice) utterance.voice = goodVoice;
+                    
+                    speechSynthesis.speak(utterance);
+                }, delay);
+                
+                delay += (sentence.length * 60) + 400;
+            });
         }
 
         // Start intro animation

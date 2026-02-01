@@ -533,6 +533,13 @@
             font-weight: bold;
         }
 
+        .intro-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
         .intro-btn {
             padding: 18px 40px;
             font-size: 1.4em;
@@ -550,6 +557,22 @@
         .intro-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 8px 30px rgba(46, 204, 113, 0.5);
+        }
+
+        .intro-btn-small {
+            padding: 10px 20px;
+            font-size: 1em;
+            font-family: inherit;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .intro-btn-small:hover {
+            background: #7f8c8d;
         }
     </style>
 </head>
@@ -591,7 +614,10 @@
                     <div class="example-caption" id="exampleCaption">White stone in the middle...</div>
                 </div>
                 
-                <button class="intro-btn" onclick="startGame()">Got it! Let's Play! 🎮</button>
+                <div class="intro-buttons">
+                    <button class="intro-btn-small" onclick="playIntroNarration()">🔊 Hear it again</button>
+                    <button class="intro-btn" onclick="startGame()">Got it! Let's Play! 🎮</button>
+                </div>
             </div>
         </div>
 
@@ -734,6 +760,8 @@
             showIntroAnimation();
         }
 
+        let introPlayed = false;
+
         function showIntroAnimation() {
             const board = document.getElementById('exampleBoard');
             board.innerHTML = '';
@@ -748,6 +776,12 @@
 
             // Animate the capture example
             const caption = document.getElementById('exampleCaption');
+
+            // Play audio intro ONCE
+            if (!introPlayed) {
+                introPlayed = true;
+                playIntroNarration();
+            }
             
             // Step 1: White stone appears in center
             setTimeout(() => {
@@ -801,6 +835,51 @@
             setTimeout(() => {
                 showIntroAnimation();
             }, 6000);
+        }
+
+        function playIntroNarration() {
+            // Natural, friendly narration like Bishop is really talking
+            const narration = `
+                Hey Krishna! Welcome to Go!
+                This game is super fun. Here's what you need to know.
+                Your goal is to capture my stones!
+                How do you do it? You surround them!
+                Watch this... see the white stone?
+                Now I put black stones all around it... top, left, right, bottom...
+                And poof! It's captured!
+                That's it! Surround my stones to capture them.
+                When you're ready, tap Let's Play!
+            `;
+            speakNaturally(narration);
+        }
+
+        function speakNaturally(text) {
+            // Break into sentences for more natural pacing
+            const sentences = text.trim().split(/[.!?]+/).filter(s => s.trim());
+            let delay = 0;
+            
+            sentences.forEach((sentence, i) => {
+                setTimeout(() => {
+                    const utterance = new SpeechSynthesisUtterance(sentence.trim());
+                    utterance.rate = 0.85;  // Slightly slower for kids
+                    utterance.pitch = 1.1;  // Slightly higher, friendlier
+                    
+                    // Try to get a good voice
+                    const voices = speechSynthesis.getVoices();
+                    const goodVoice = voices.find(v => 
+                        v.name.includes('Samantha') || 
+                        v.name.includes('Daniel') || 
+                        v.name.includes('Google') ||
+                        v.lang.startsWith('en')
+                    );
+                    if (goodVoice) utterance.voice = goodVoice;
+                    
+                    speechSynthesis.speak(utterance);
+                }, delay);
+                
+                // Estimate time for each sentence + pause
+                delay += (sentence.length * 60) + 400;
+            });
         }
 
         function startGame() {
