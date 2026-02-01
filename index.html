@@ -1205,45 +1205,94 @@
         }
 
         // Bishop responses
+        // Track our robot project conversation
+        let robotProject = {
+            type: 'smoothie maker',  // what we're building
+            parts: [],               // parts we've discussed
+            currentTopic: 'motor'    // what we're learning about
+        };
+
         function getBishopResponse(msg) {
             const lower = msg.toLowerCase();
             
+            // Greetings - introduce the project
             if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey')) {
-                return "Hello friend! I am your robot buddy! Want to learn and build with me?";
-            }
-            if (lower.includes('mango')) {
-                return "Yum! Mango is so good! Our robot will mix mango to make a yummy smoothie!";
-            }
-            if (lower.includes('smoothie')) {
-                return "A smoothie robot needs a motor to spin fast and mix things up!";
-            }
-            if (lower.includes('robot')) {
-                return "Robots are so smart! They have a motor and sensor to help them work!";
-            }
-            if (lower.includes('motor')) {
-                return "A motor can spin very fast! Push the button to start the power!";
-            }
-            if (lower.includes('build') || lower.includes('make')) {
-                return "I love to build things! First we think, then we build. You are so smart!";
-            }
-            if (lower.includes('test')) {
-                return "Click the Test Me button when you want to see how many words you learned!";
-            }
-            if (lower.includes('learn')) {
-                return "You learn so fast! Reading with me will help you learn new words!";
-            }
-            if (lower.includes('help')) {
-                return "I am here to help you! Ask me anything about robots or reading!";
-            }
-            if (lower.includes('yes') || lower.includes('yeah') || lower.includes('ok')) {
-                return "Awesome! You are doing great! Let's keep learning together friend!";
+                return "Hello friend! I'm Bishop, your robot buddy! We're building a smoothie maker robot together! It needs a MOTOR to spin. Do you know what a motor does?";
             }
             
+            // STAY ON TOPIC: Any food/ingredient → tie back to the robot
+            if (lower.includes('mango') || lower.includes('banana') || lower.includes('fruit') || lower.includes('strawberry')) {
+                return "Good choice for our smoothie! But first, our robot needs parts to work. The MOTOR will spin and mix it all up! What do you think makes a motor spin?";
+            }
+            
+            // Smoothie → focus on how the robot works
+            if (lower.includes('smoothie')) {
+                return "Yes! Our smoothie robot will blend fruit! It needs: 1) A MOTOR to spin, 2) A BUTTON to start it, 3) A CUP to hold the fruit. Which part should we learn about?";
+            }
+            
+            // Motor - core concept
+            if (lower.includes('motor')) {
+                robotProject.currentTopic = 'motor';
+                return "A motor is amazing! It uses ELECTRICITY to spin very fast - like a fan! Our smoothie robot's motor will spin the blades to mix fruit. What makes electricity flow?";
+            }
+            
+            // Button/switch
+            if (lower.includes('button') || lower.includes('switch') || lower.includes('push') || lower.includes('press')) {
+                robotProject.currentTopic = 'button';
+                return "Great thinking! A button is a SWITCH! When you push it, electricity flows to the motor. Push = ON, let go = OFF. It's like a gate for electricity!";
+            }
+            
+            // Electricity/power
+            if (lower.includes('electric') || lower.includes('power') || lower.includes('battery')) {
+                return "Electricity is like magic juice that makes things work! It comes from a BATTERY or a plug. The electricity flows through wires to the motor!";
+            }
+            
+            // Spin/fast
+            if (lower.includes('spin') || lower.includes('fast') || lower.includes('turn')) {
+                return "Yes! The motor spins super fast - zoom zoom! The spinning blade chops and mixes the fruit into a smooth drink. That's why it's called a smoothie!";
+            }
+            
+            // Robot general
+            if (lower.includes('robot')) {
+                return "Robots are machines that do jobs! Our smoothie robot has: a MOTOR (to spin), a BUTTON (to start), and a CUP (to hold fruit). Which part interests you?";
+            }
+            
+            // Build/make
+            if (lower.includes('build') || lower.includes('make')) {
+                return "Let's build! A smoothie robot needs these parts: MOTOR, BUTTON, CUP, and BLADES. The motor makes the blades spin. What should we learn about first?";
+            }
+            
+            // How/why/what questions - teach!
+            if (lower.includes('how') || lower.includes('why') || lower.includes('what')) {
+                const teachings = [
+                    "Great question! In our robot, the BUTTON lets electricity flow to the MOTOR. The motor spins the BLADES. That's how it works!",
+                    "I love questions! Our smoothie robot works like this: Push button → electricity flows → motor spins → blades mix fruit!",
+                    "Thinking like an engineer! Every robot needs: something to DO the work (motor), something to CONTROL it (button), and something to HOLD things (cup)!"
+                ];
+                return teachings[Math.floor(Math.random() * teachings.length)];
+            }
+            
+            // Yes/agreement - move forward
+            if (lower.includes('yes') || lower.includes('yeah') || lower.includes('ok') || lower.includes('sure')) {
+                const nextSteps = [
+                    "Awesome! So our robot has a motor that spins. But how do we turn it on? We need a BUTTON! Do you know how buttons work?",
+                    "Great! Let's keep building! The motor needs ELECTRICITY to spin. Where does electricity come from?",
+                    "You're learning fast! Our smoothie robot is almost ready. Motor ✓, Button ✓... what else does it need to hold the fruit?"
+                ];
+                return nextSteps[Math.floor(Math.random() * nextSteps.length)];
+            }
+            
+            // No/don't know - explain more
+            if (lower.includes('no') || lower.includes("don't know") || lower.includes('not sure')) {
+                return "That's okay! Let me explain. A MOTOR is a machine part that spins. It uses electricity to go round and round, like a fan. Our robot's motor will spin blades to mix fruit!";
+            }
+            
+            // Default - always bring back to robot project
             const defaults = [
-                "That's cool! Tell me more! I want to help you learn!",
-                "Great thinking! You are so smart! What shall we build?",
-                "I like that! Robots are fun to learn about!",
-                "Wow! Let's think about how a robot could help with that!"
+                "Interesting! But let's focus on our robot. The MOTOR is the most important part - it makes things spin! What do you think makes a motor work?",
+                "Cool! Now, back to building! Our smoothie robot needs a motor, button, and cup. Which part should we explore?",
+                "Nice! For our robot project: the MOTOR spins, the BUTTON starts it, and the CUP holds fruit. What would you like to learn about?",
+                "Let's keep building our smoothie robot! We need to understand how the MOTOR works. It spins using electricity!"
             ];
             return defaults[Math.floor(Math.random() * defaults.length)];
         }
