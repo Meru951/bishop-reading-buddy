@@ -609,7 +609,7 @@
             <button class="control-btn active" id="slowBtn" onclick="setSpeed('slow')">📖 Learn</button>
             <button class="control-btn" id="normalBtn" onclick="setSpeed('normal')">🚀 Fast</button>
             <button class="control-btn test-btn" onclick="startTest()">📝 Test Me!</button>
-            <button class="control-btn" onclick="practiceTyping()" style="background:#9c27b0;color:white;">⌨️ Type!</button>
+            <button class="control-btn" onclick="startVoiceTyping()" style="background:#9c27b0;color:white;">🎤 Type!</button>
         </div>
 
         <!-- Chat Area -->
@@ -810,9 +810,11 @@
                 const response = getBishopResponse(text);
                 addMessage(response, 'bishop');
                 
-                // Suggest typing help after Bishop responds
-                if (Math.random() > 0.3) {
-                    suggestTyping();
+                // Occasionally prompt to practice typing
+                if (Math.random() > 0.7) {
+                    setTimeout(() => {
+                        speak("Want to practice typing? Click the microphone button and tell me what word to spell!");
+                    }, 1500);
                 }
             }, 500);
         }
@@ -1368,7 +1370,62 @@
             }, 2000);
         }
 
-        // Manual typing practice
+        // Voice input for typing
+        let recognition = null;
+        
+        function startVoiceTyping() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("Your browser doesn't support voice input. Try Chrome!");
+                // Fallback to random word
+                practiceTyping();
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            // Show listening UI
+            const btn = event.target;
+            btn.textContent = '👂 Listening...';
+            btn.style.background = '#f44336';
+            
+            speak("Say a word you want to type!").then(() => {
+                recognition.start();
+            });
+
+            recognition.onresult = function(event) {
+                const word = event.results[0][0].transcript.toLowerCase().trim();
+                // Clean up - get first word only
+                const cleanWord = word.split(' ')[0].replace(/[^a-z]/g, '');
+                
+                btn.textContent = '🎤 Type!';
+                btn.style.background = '#9c27b0';
+                
+                if (cleanWord && cleanWord.length > 0 && cleanWord.length <= 12) {
+                    speak(`Okay! Let's spell ${cleanWord}!`).then(() => {
+                        startTypingHelper(cleanWord);
+                    });
+                } else {
+                    speak("I didn't catch that. Try again!");
+                }
+            };
+
+            recognition.onerror = function(event) {
+                btn.textContent = '🎤 Type!';
+                btn.style.background = '#9c27b0';
+                speak("I couldn't hear you. Try again!");
+            };
+
+            recognition.onend = function() {
+                btn.textContent = '🎤 Type!';
+                btn.style.background = '#9c27b0';
+            };
+        }
+
+        // Fallback typing practice (random word)
         function practiceTyping() {
             const words = ['robot', 'mango', 'motor', 'spin', 'mix', 'milk', 'ice', 'power', 'start', 'help', 'build', 'cool', 'fast', 'slow'];
             const word = words[Math.floor(Math.random() * words.length)];
