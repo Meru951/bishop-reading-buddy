@@ -372,6 +372,31 @@
             cursor: pointer;
         }
 
+        .mic-btn {
+            padding: 12px 16px;
+            font-size: 1.3em;
+            background: var(--green);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mic-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .mic-btn.listening {
+            background: #f44336;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
         /* Progress */
         .progress-bar {
             display: flex;
@@ -616,7 +641,8 @@
         <div class="chat-area">
             <div class="chat-messages" id="chatMessages"></div>
             <div class="chat-input-area">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Talk to Bishop..." onkeypress="handleKeyPress(event)" oninput="checkTyping(event)">
+                <button class="mic-btn" id="micBtn" onclick="startVoiceChat()">🎤</button>
+                <input type="text" class="chat-input" id="chatInput" placeholder="Tap 🎤 to talk!" onkeypress="handleKeyPress(event)" oninput="checkTyping(event)">
                 <button class="send-btn" onclick="sendMessage()">Send! 🚀</button>
             </div>
             
@@ -795,6 +821,50 @@
             readingSpeed = speed;
             document.getElementById('slowBtn').classList.toggle('active', speed === 'slow');
             document.getElementById('normalBtn').classList.toggle('active', speed === 'normal');
+        }
+
+        // Voice chat - talk to Bishop!
+        function startVoiceChat() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("Your browser doesn't support voice input. Try Chrome!");
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const chatRecognition = new SpeechRecognition();
+            chatRecognition.lang = 'en-US';
+            chatRecognition.continuous = false;
+            chatRecognition.interimResults = false;
+
+            const micBtn = document.getElementById('micBtn');
+            micBtn.classList.add('listening');
+            micBtn.textContent = '👂';
+            
+            // Visual feedback
+            speak("I'm listening!").then(() => {
+                chatRecognition.start();
+            });
+
+            chatRecognition.onresult = function(event) {
+                const spokenText = event.results[0][0].transcript;
+                micBtn.classList.remove('listening');
+                micBtn.textContent = '🎤';
+                
+                // Show what was heard and send it
+                document.getElementById('chatInput').value = spokenText;
+                sendMessage();
+            };
+
+            chatRecognition.onerror = function(event) {
+                micBtn.classList.remove('listening');
+                micBtn.textContent = '🎤';
+                speak("I couldn't hear you. Try again!");
+            };
+
+            chatRecognition.onend = function() {
+                micBtn.classList.remove('listening');
+                micBtn.textContent = '🎤';
+            };
         }
 
         // Send message
