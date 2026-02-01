@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bishop - Memory Match!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard', cursive, sans-serif;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        /* Intro Screen */
+        .intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .intro-card {
+            background: white;
+            border-radius: 30px;
+            padding: 25px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .intro-bishop {
+            font-size: 4em;
+            margin-bottom: 10px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .intro-title {
+            font-size: 1.8em;
+            color: #8e44ad;
+            margin-bottom: 20px;
+        }
+
+        .intro-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        .intro-icon {
+            font-size: 2.2em;
+            min-width: 45px;
+            text-align: center;
+        }
+
+        .intro-text {
+            font-size: 1.1em;
+            line-height: 1.4;
+            color: #2c3e50;
+        }
+
+        .intro-text strong {
+            color: #8e44ad;
+        }
+
+        /* Animated Example */
+        .intro-example {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .example-title {
+            font-weight: bold;
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .example-cards {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .example-card {
+            width: 70px;
+            height: 90px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            transition: all 0.5s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .example-card.facedown {
+            background: linear-gradient(135deg, #1a5276, #154360);
+            color: white;
+        }
+
+        .example-card.faceup {
+            background: white;
+        }
+
+        .example-card.matched {
+            background: #2ecc71;
+            transform: scale(1.1);
+        }
+
+        .example-caption {
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .intro-btn {
+            padding: 18px 40px;
+            font-size: 1.4em;
+            font-family: inherit;
+            font-weight: bold;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.4);
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .intro-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Game Screen */
+        .game-screen {
+            display: none;
+        }
+
+        .bishop-chat {
+            background: white;
+            border-radius: 25px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            position: relative;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .bishop-chat::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 30px;
+            border: 15px solid transparent;
+            border-top-color: white;
+            border-bottom: 0;
+        }
+
+        .bishop-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .bishop-avatar {
+            font-size: 2em;
+        }
+
+        .bishop-name {
+            font-weight: bold;
+            color: #8e44ad;
+            font-size: 1.1em;
+        }
+
+        .bishop-message {
+            font-size: 1.2em;
+            line-height: 1.4;
+            color: #2c3e50;
+        }
+
+        .sound-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #8e44ad;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+
+        /* Game Area */
+        .game-area {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .stat {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .card {
+            aspect-ratio: 3/4;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .card.facedown {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+        }
+
+        .card.facedown::after {
+            content: '❓';
+            font-size: 0.8em;
+        }
+
+        .card.faceup {
+            background: white;
+        }
+
+        .card.matched {
+            background: #2ecc71;
+            transform: scale(0.95);
+            cursor: default;
+        }
+
+        .card.wrong {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .card:not(.matched):not(.faceup):hover {
+            transform: scale(1.05);
+        }
+
+        /* Game Buttons */
+        .game-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .game-btn {
+            padding: 12px 25px;
+            font-size: 1em;
+            font-family: inherit;
+            font-weight: bold;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-decoration: none;
+            color: white;
+        }
+
+        .game-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .game-btn.new {
+            background: #e74c3c;
+        }
+
+        .game-btn.home {
+            background: #3498db;
+        }
+
+        /* Progress */
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 12px 20px;
+            margin-top: 15px;
+            text-align: center;
+            color: white;
+            font-size: 1.1em;
+        }
+
+        /* Celebration */
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .celebration.show {
+            display: flex;
+        }
+
+        .celebration-content {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            text-align: center;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            to { transform: scale(1); }
+        }
+
+        .celebration-emoji {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .celebration-text {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .celebration-sub {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .celebration-btn {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-family: inherit;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- INTRO SCREEN -->
+        <div class="intro-screen" id="introScreen">
+            <div class="intro-card">
+                <div class="intro-bishop">🤖</div>
+                <h1 class="intro-title">Memory Match!</h1>
+                
+                <div class="intro-section">
+                    <div class="intro-icon">🎯</div>
+                    <div class="intro-text">
+                        <strong>What's the goal?</strong><br>
+                        Find all the matching pairs!
+                    </div>
+                </div>
+                
+                <div class="intro-section">
+                    <div class="intro-icon">👆</div>
+                    <div class="intro-text">
+                        <strong>How do you play?</strong><br>
+                        Tap two cards. If they match, you keep them!
+                    </div>
+                </div>
+                
+                <div class="intro-section">
+                    <div class="intro-icon">🧠</div>
+                    <div class="intro-text">
+                        <strong>The trick?</strong><br>
+                        Remember where you saw each picture!
+                    </div>
+                </div>
+
+                <div class="intro-example">
+                    <div class="example-title">Watch how it works!</div>
+                    <div class="example-cards">
+                        <div class="example-card facedown" id="demo1">❓</div>
+                        <div class="example-card facedown" id="demo2">❓</div>
+                    </div>
+                    <div class="example-caption" id="demoCaption">Tap a card to flip it...</div>
+                </div>
+                
+                <button class="intro-btn" onclick="startGame()">Let's Play! 🎮</button>
+            </div>
+        </div>
+
+        <!-- GAME SCREEN -->
+        <div class="game-screen" id="gameScreen">
+            <div class="bishop-chat">
+                <button class="sound-btn" onclick="speakMessage()">🔊</button>
+                <div class="bishop-header">
+                    <span class="bishop-avatar">🤖</span>
+                    <span class="bishop-name">Bishop</span>
+                </div>
+                <div class="bishop-message" id="bishopMessage">
+                    Find two cards that are the SAME! Tap a card to flip it!
+                </div>
+            </div>
+
+            <div class="game-area">
+                <div class="game-stats">
+                    <div class="stat">🎯 Pairs: <span id="pairsFound">0</span>/8</div>
+                    <div class="stat">👆 Tries: <span id="tries">0</span></div>
+                </div>
+
+                <div class="card-grid" id="cardGrid"></div>
+
+                <div class="game-buttons">
+                    <button class="game-btn new" onclick="newGame()">🔄 New Game</button>
+                    <a href="krishna.html" class="game-btn home">🏠 Home</a>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                ⭐ You're doing great, Krishna! ⭐
+            </div>
+        </div>
+    </div>
+
+    <!-- Celebration -->
+    <div class="celebration" id="celebration">
+        <div class="celebration-content">
+            <div class="celebration-emoji">🎉</div>
+            <div class="celebration-text" id="celebText">You found them all!</div>
+            <div class="celebration-sub" id="celebSub">Amazing memory!</div>
+            <button class="celebration-btn" onclick="playAgain()">Play Again! 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let cards = [];
+        let flipped = [];
+        let matched = [];
+        let tries = 0;
+        let canFlip = true;
+        let lastMessage = '';
+
+        const emojis = ['🐶', '🐱', '🐸', '🦁', '🐰', '🐼', '🦊', '🐨'];
+
+        // Intro animation
+        function runIntroDemo() {
+            const card1 = document.getElementById('demo1');
+            const card2 = document.getElementById('demo2');
+            const caption = document.getElementById('demoCaption');
+
+            // Reset
+            card1.className = 'example-card facedown';
+            card1.textContent = '❓';
+            card2.className = 'example-card facedown';
+            card2.textContent = '❓';
+
+            // Step 1: Flip first card
+            setTimeout(() => {
+                card1.className = 'example-card faceup';
+                card1.textContent = '🐶';
+                caption.textContent = "It's a dog! 🐶";
+            }, 1000);
+
+            // Step 2: Flip second card
+            setTimeout(() => {
+                card2.className = 'example-card faceup';
+                card2.textContent = '🐶';
+                caption.textContent = "Another dog! They MATCH!";
+            }, 2500);
+
+            // Step 3: Match!
+            setTimeout(() => {
+                card1.className = 'example-card matched';
+                card2.className = 'example-card matched';
+                caption.textContent = "🎉 MATCH! You keep them!";
+            }, 4000);
+
+            // Repeat
+            setTimeout(runIntroDemo, 6000);
+        }
+
+        // Start intro animation
+        runIntroDemo();
+
+        function startGame() {
+            document.getElementById('introScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            newGame();
+            speak("Find two cards that match! Tap a card to flip it!");
+        }
+
+        function newGame() {
+            // Create pairs
+            cards = [...emojis, ...emojis];
+            // Shuffle
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+            
+            flipped = [];
+            matched = [];
+            tries = 0;
+            canFlip = true;
+            
+            document.getElementById('pairsFound').textContent = '0';
+            document.getElementById('tries').textContent = '0';
+            
+            renderCards();
+            say("Find the matching pairs! Tap any card to start!");
+        }
+
+        function renderCards() {
+            const grid = document.getElementById('cardGrid');
+            grid.innerHTML = '';
+
+            cards.forEach((emoji, index) => {
+                const card = document.createElement('div');
+                card.className = 'card facedown';
+                card.dataset.index = index;
+                
+                if (matched.includes(index)) {
+                    card.className = 'card matched';
+                    card.textContent = emoji;
+                } else if (flipped.includes(index)) {
+                    card.className = 'card faceup';
+                    card.textContent = emoji;
+                }
+                
+                card.onclick = () => flipCard(index);
+                grid.appendChild(card);
+            });
+        }
+
+        function flipCard(index) {
+            if (!canFlip) return;
+            if (flipped.includes(index)) return;
+            if (matched.includes(index)) return;
+
+            flipped.push(index);
+            renderCards();
+
+            // Speak what they found
+            const names = {
+                '🐶': 'dog', '🐱': 'cat', '🐸': 'frog', '🦁': 'lion',
+                '🐰': 'bunny', '🐼': 'panda', '🦊': 'fox', '🐨': 'koala'
+            };
+            speak(names[cards[index]] || 'card');
+
+            if (flipped.length === 2) {
+                canFlip = false;
+                tries++;
+                document.getElementById('tries').textContent = tries;
+
+                const [first, second] = flipped;
+
+                if (cards[first] === cards[second]) {
+                    // Match!
+                    matched.push(first, second);
+                    flipped = [];
+                    canFlip = true;
+                    
+                    document.getElementById('pairsFound').textContent = matched.length / 2;
+                    
+                    setTimeout(() => {
+                        renderCards();
+                        
+                        const cheers = [
+                            "MATCH! Great job! 🎉",
+                            "You found a pair! ⭐",
+                            "Awesome memory! 🧠",
+                            "Yes! They're the same! 👏"
+                        ];
+                        say(cheers[Math.floor(Math.random() * cheers.length)]);
+
+                        // Check for win
+                        if (matched.length === cards.length) {
+                            setTimeout(showWin, 500);
+                        }
+                    }, 300);
+                } else {
+                    // No match
+                    say("Not the same. Remember where they are!");
+                    
+                    setTimeout(() => {
+                        // Mark as wrong briefly
+                        const cardEls = document.querySelectorAll('.card');
+                        cardEls[first].classList.add('wrong');
+                        cardEls[second].classList.add('wrong');
+                    }, 300);
+
+                    setTimeout(() => {
+                        flipped = [];
+                        canFlip = true;
+                        renderCards();
+                    }, 1200);
+                }
+            }
+        }
+
+        function showWin() {
+            document.getElementById('celebration').classList.add('show');
+            
+            let rating = '';
+            if (tries <= 12) {
+                rating = "PERFECT memory! 🌟🌟🌟";
+            } else if (tries <= 16) {
+                rating = "Great memory! 🌟🌟";
+            } else {
+                rating = "Good job! 🌟";
+            }
+            
+            document.getElementById('celebSub').textContent = rating + ` (${tries} tries)`;
+            speak("You found all the pairs! Amazing!");
+        }
+
+        function playAgain() {
+            document.getElementById('celebration').classList.remove('show');
+            newGame();
+        }
+
+        function say(message) {
+            document.getElementById('bishopMessage').textContent = message;
+            lastMessage = message;
+        }
+
+        function speakMessage() {
+            speak(lastMessage);
+        }
+
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            speechSynthesis.speak(utterance);
+        }
+    </script>
+</body>
+</html>
