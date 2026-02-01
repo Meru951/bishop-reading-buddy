@@ -1205,96 +1205,241 @@
         }
 
         // Bishop responses
-        // Track our robot project conversation
-        let robotProject = {
-            type: 'smoothie maker',  // what we're building
-            parts: [],               // parts we've discussed
-            currentTopic: 'motor'    // what we're learning about
+        // Robotics curriculum - deep conceptual learning
+        const robotConcepts = {
+            // INPUTS - how robots sense the world
+            sensors: [
+                "SENSORS are like robot eyes and ears! They help robots feel the world. A light sensor sees bright and dark. A touch sensor feels when something bumps it!",
+                "Robots use sensors to know what's happening! Like how your eyes see and your ears hear. What sensor would a robot car need?",
+                "Cool sensors: CAMERA (sees things), MICROPHONE (hears sounds), TOUCH sensor (feels bumps), HEAT sensor (feels hot and cold)!"
+            ],
+            camera: [
+                "A camera is a robot's eye! It takes pictures and the robot's brain looks at them to understand what it sees. Self-driving cars use cameras!",
+                "Robot cameras can see colors, shapes, and faces! Some robots use TWO cameras to see in 3D, just like your two eyes!"
+            ],
+            microphone: [
+                "A microphone is a robot's ear! It turns sound waves into electricity. That's how robots like me can hear you talk!",
+                "Voice robots like Alexa use microphones to hear your words, then their brain figures out what you said!"
+            ],
+            
+            // OUTPUTS - how robots act
+            motor: [
+                "A MOTOR turns electricity into spinning! Inside are magnets that push and pull to make it spin super fast. Motors are in fans, cars, and robots!",
+                "Motors are amazing! They can spin wheels to move, spin blades to mix, or spin propellers to fly! What would YOU use a motor for?",
+                "Fun fact: there are motors in your house right now! In the fridge, washing machine, fan, and electric toothbrush!"
+            ],
+            wheels: [
+                "WHEELS help robots move! A motor spins the wheel, and the wheel rolls on the ground. Two wheels = robot can turn. Four wheels = super stable!",
+                "Robot wheels are clever! To turn left, the right wheel spins faster. To turn right, the left wheel spins faster. To spin in circles, wheels go opposite ways!"
+            ],
+            arm: [
+                "Robot ARMS can grab things! They have joints like your elbow and shoulder. Factory robots use arms to pick up car parts!",
+                "A robot arm needs motors at each joint to move. More joints = more flexible! Your arm has 7 joints. Some robot arms have 6!"
+            ],
+            gripper: [
+                "A GRIPPER is a robot hand! It can open and close to grab things. Some have two fingers, some have three, some are soft like pillows!",
+                "Grippers need to be careful! Too tight = squish things. Too loose = drop things. Robots learn just the right squeeze!"
+            ],
+            lights: [
+                "Robots use LIGHTS to talk to us! Green light = happy. Red light = problem. Blinking = thinking. It's like robot body language!",
+                "LED lights use very little electricity but can be super bright! Robots use them to show feelings and guide people."
+            ],
+            speaker: [
+                "A SPEAKER lets robots talk! It turns electricity into sound waves. That's how I can speak to you!",
+                "Speakers vibrate really fast to make sound. Low sounds = slow vibration. High sounds = fast vibration. Music is vibrations!"
+            ],
+            
+            // BRAIN - how robots think
+            brain: [
+                "A robot's BRAIN is a computer chip! It's tiny but super smart. It reads sensors, thinks about what to do, then tells the motors what to do!",
+                "The brain runs PROGRAMS - instructions that tell the robot what to do. Like a recipe, but for robots!",
+                "Robot brains can think REALLY fast! Millions of decisions per second. But they only do what we program them to do."
+            ],
+            computer: [
+                "A computer is like a super brain! It can do math really fast and follow instructions. Every smart robot has a tiny computer inside!",
+                "Computers understand 1s and 0s - on and off, like a light switch. But BILLIONS of switches together can do amazing things!"
+            ],
+            program: [
+                "A PROGRAM is instructions for a robot! Like: IF you see red, THEN stop. IF you see green, THEN go. That's programming!",
+                "Programming is giving robots steps to follow. Step 1: look around. Step 2: find the ball. Step 3: drive to it. Step 4: grab it!",
+                "You can be a programmer! You tell the robot WHAT to do, and it figures out HOW. Like telling a friend to make a sandwich!"
+            ],
+            code: [
+                "CODE is the language robots understand! Programmers write code to tell robots what to do. It's like writing a story, but for machines!",
+                "There are many coding languages! Scratch uses blocks. Python uses words. They all tell the computer what to do step by step."
+            ],
+            
+            // POWER - how robots get energy
+            battery: [
+                "A BATTERY stores electricity! It's like a juice box for robots. When it's empty, you charge it up again. Phones and toys use batteries!",
+                "Batteries have chemicals inside that make electricity. When the chemicals run out, the battery is dead. Rechargeable ones can refill!",
+                "Big robots need big batteries! A robot car battery is HUGE. A watch robot battery is tiny. Size matters for how long it works!"
+            ],
+            electricity: [
+                "ELECTRICITY is energy that flows through wires like water through pipes! It powers everything: lights, motors, brains!",
+                "Electricity moves super fast - almost as fast as light! When you flip a switch, the light turns on instantly!",
+                "Be careful with electricity! It's powerful and can hurt. Robots use safe low-power electricity from batteries."
+            ],
+            circuit: [
+                "A CIRCUIT is a path for electricity! It goes from the battery, through wires, to the motor, and back. A complete loop!",
+                "If the circuit breaks, electricity stops! That's why a switch works - it breaks the loop to turn things off.",
+                "Circuit boards are like tiny cities! The roads are wires, and the buildings are chips that do different jobs."
+            ],
+            wire: [
+                "WIRES carry electricity! They're made of metal inside (usually copper) and plastic outside to keep us safe.",
+                "Wires are like roads for electricity. Thick wires carry lots of power. Thin wires carry a little. Different colors help us know which is which!"
+            ],
+            
+            // MECHANICAL - how robots move
+            gears: [
+                "GEARS are wheels with teeth! When one turns, it makes the next one turn. Big gear + small gear = change speed!",
+                "Gears are like magic! A small gear turning fast makes a big gear turn slow but STRONG. That's how robots lift heavy things!",
+                "Look at a bicycle - the pedals turn a big gear, chain moves it to a small gear, and the wheel spins fast! Robots use gears the same way!"
+            ],
+            lever: [
+                "A LEVER is a simple machine! Push one end down, the other end goes up. It makes lifting easier! See-saws are levers!",
+                "Robot arms use levers! A small motor push at one end makes a big movement at the other end. Clever!"
+            ],
+            pulley: [
+                "A PULLEY is a wheel with a rope! Pull the rope down, and it lifts something up. It changes the direction of force!",
+                "Cranes use pulleys! One motor can lift super heavy things by using many pulleys together. More pulleys = easier to lift!"
+            ],
+            
+            // TYPES OF ROBOTS
+            drone: [
+                "A DRONE is a flying robot! It has propellers that spin to push air down, which pushes the drone up. Four propellers help it stay stable!",
+                "Drones use sensors to know which way is up! They can hover, fly forward, and even do flips. The brain controls each propeller's speed!",
+                "Drones can deliver packages, take photos, or even help farmers check their crops! Flying robots are so cool!"
+            ],
+            car: [
+                "Robot CARS can drive themselves! They use cameras to see, radar to measure distance, and a smart brain to make decisions!",
+                "Self-driving cars have to think fast! See a person? Stop! See green light? Go! They follow rules just like people do.",
+                "Robot cars are always learning! They drive millions of miles and get better at knowing what to do."
+            ],
+            helper: [
+                "HELPER robots work with people! Robots in hospitals deliver medicine. Robots in stores help you find things!",
+                "Some robots help people walk again! They're like super-strong legs. Some robots help doctors do surgery with tiny, precise movements!"
+            ],
+            factory: [
+                "FACTORY robots build things! Car factories have hundreds of robot arms. They weld, paint, and put parts together - the same way, every time!",
+                "Factory robots work 24 hours a day! They don't get tired or bored. They can do the same job perfectly, over and over!"
+            ],
+            
+            // ROBOT PROJECT - tie it all together
+            project: [
+                "Our smoothie robot has: SENSORS (to see the fruit), a BRAIN (to decide what to do), MOTORS (to spin the blades), and a BUTTON (to start)!",
+                "Let's add to our robot! What if it had a CAMERA to see when the smoothie is ready? Or a SPEAKER to say 'Done!'?",
+                "Every robot needs: 1) Sensors to feel, 2) Brain to think, 3) Motors to move, 4) Power from batteries. What should we add to ours?"
+            ]
         };
+
+        // Track what we've taught
+        let taughtConcepts = [];
+        
+        function getRandomFromArray(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
 
         function getBishopResponse(msg) {
             const lower = msg.toLowerCase();
             
-            // Greetings - introduce the project
+            // Greetings - introduce robotics!
             if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey')) {
-                return "Hello friend! I'm Bishop, your robot buddy! We're building a smoothie maker robot together! It needs a MOTOR to spin. Do you know what a motor does?";
+                return "Hello friend! I'm Bishop! I know ALL about robots! Want to learn how robots see, think, and move? Or should we build a smoothie robot together?";
             }
             
-            // STAY ON TOPIC: Any food/ingredient → tie back to the robot
-            if (lower.includes('mango') || lower.includes('banana') || lower.includes('fruit') || lower.includes('strawberry')) {
-                return "Good choice for our smoothie! But first, our robot needs parts to work. The MOTOR will spin and mix it all up! What do you think makes a motor spin?";
-            }
+            // SENSORS & INPUT
+            if (lower.includes('sensor')) return getRandomFromArray(robotConcepts.sensors);
+            if (lower.includes('camera') || lower.includes('see') || lower.includes('eye')) return getRandomFromArray(robotConcepts.camera);
+            if (lower.includes('microphone') || lower.includes('hear') || lower.includes('listen') || lower.includes('ear')) return getRandomFromArray(robotConcepts.microphone);
             
-            // Smoothie → focus on how the robot works
-            if (lower.includes('smoothie')) {
-                return "Yes! Our smoothie robot will blend fruit! It needs: 1) A MOTOR to spin, 2) A BUTTON to start it, 3) A CUP to hold the fruit. Which part should we learn about?";
-            }
+            // OUTPUTS & MOVEMENT
+            if (lower.includes('motor') || lower.includes('spin')) return getRandomFromArray(robotConcepts.motor);
+            if (lower.includes('wheel') || lower.includes('roll') || lower.includes('drive')) return getRandomFromArray(robotConcepts.wheels);
+            if (lower.includes('arm')) return getRandomFromArray(robotConcepts.arm);
+            if (lower.includes('grip') || lower.includes('grab') || lower.includes('hand') || lower.includes('hold')) return getRandomFromArray(robotConcepts.gripper);
+            if (lower.includes('light') || lower.includes('led') || lower.includes('glow')) return getRandomFromArray(robotConcepts.lights);
+            if (lower.includes('speak') || lower.includes('talk') || lower.includes('voice') || lower.includes('sound')) return getRandomFromArray(robotConcepts.speaker);
             
-            // Motor - core concept
-            if (lower.includes('motor')) {
-                robotProject.currentTopic = 'motor';
-                return "A motor is amazing! It uses ELECTRICITY to spin very fast - like a fan! Our smoothie robot's motor will spin the blades to mix fruit. What makes electricity flow?";
-            }
+            // BRAIN & THINKING
+            if (lower.includes('brain') || lower.includes('think') || lower.includes('smart')) return getRandomFromArray(robotConcepts.brain);
+            if (lower.includes('computer') || lower.includes('chip')) return getRandomFromArray(robotConcepts.computer);
+            if (lower.includes('program') || lower.includes('instruction')) return getRandomFromArray(robotConcepts.program);
+            if (lower.includes('code') || lower.includes('coding')) return getRandomFromArray(robotConcepts.code);
             
-            // Button/switch
-            if (lower.includes('button') || lower.includes('switch') || lower.includes('push') || lower.includes('press')) {
-                robotProject.currentTopic = 'button';
-                return "Great thinking! A button is a SWITCH! When you push it, electricity flows to the motor. Push = ON, let go = OFF. It's like a gate for electricity!";
-            }
+            // POWER
+            if (lower.includes('battery') || lower.includes('charge')) return getRandomFromArray(robotConcepts.battery);
+            if (lower.includes('electric') || lower.includes('power') || lower.includes('energy')) return getRandomFromArray(robotConcepts.electricity);
+            if (lower.includes('circuit') || lower.includes('board')) return getRandomFromArray(robotConcepts.circuit);
+            if (lower.includes('wire') || lower.includes('cable')) return getRandomFromArray(robotConcepts.wire);
             
-            // Electricity/power
-            if (lower.includes('electric') || lower.includes('power') || lower.includes('battery')) {
-                return "Electricity is like magic juice that makes things work! It comes from a BATTERY or a plug. The electricity flows through wires to the motor!";
-            }
+            // MECHANICAL
+            if (lower.includes('gear') || lower.includes('teeth')) return getRandomFromArray(robotConcepts.gears);
+            if (lower.includes('lever') || lower.includes('lift')) return getRandomFromArray(robotConcepts.lever);
+            if (lower.includes('pulley') || lower.includes('rope')) return getRandomFromArray(robotConcepts.pulley);
             
-            // Spin/fast
-            if (lower.includes('spin') || lower.includes('fast') || lower.includes('turn')) {
-                return "Yes! The motor spins super fast - zoom zoom! The spinning blade chops and mixes the fruit into a smooth drink. That's why it's called a smoothie!";
+            // TYPES OF ROBOTS
+            if (lower.includes('fly') || lower.includes('drone') || lower.includes('propeller')) return getRandomFromArray(robotConcepts.drone);
+            if (lower.includes('car') || lower.includes('drive') || lower.includes('self driving') || lower.includes('tesla')) return getRandomFromArray(robotConcepts.car);
+            if (lower.includes('help') || lower.includes('hospital') || lower.includes('doctor')) return getRandomFromArray(robotConcepts.helper);
+            if (lower.includes('factory') || lower.includes('build things') || lower.includes('manufacture')) return getRandomFromArray(robotConcepts.factory);
+            
+            // PROJECT
+            if (lower.includes('smoothie') || lower.includes('blend') || lower.includes('mix')) return getRandomFromArray(robotConcepts.project);
+            if (lower.includes('build') || lower.includes('make') || lower.includes('project')) return getRandomFromArray(robotConcepts.project);
+            
+            // Food → tie back to robot
+            if (lower.includes('mango') || lower.includes('banana') || lower.includes('fruit') || lower.includes('strawberry') || lower.includes('apple')) {
+                return "Yummy! For our smoothie robot to blend that, it needs a MOTOR to spin, a BRAIN to know when it's done, and a SENSOR to see the fruit! Which part interests you?";
             }
             
             // Robot general
             if (lower.includes('robot')) {
-                return "Robots are machines that do jobs! Our smoothie robot has: a MOTOR (to spin), a BUTTON (to start), and a CUP (to hold fruit). Which part interests you?";
+                const robotIntros = [
+                    "Robots are SO cool! They have: SENSORS (to feel), a BRAIN (to think), MOTORS (to move), and BATTERIES (for power). What do you want to learn about?",
+                    "I love robots! There are drones that fly, cars that drive themselves, arms that build things, and helpers that work with people! Which sounds cool?",
+                    "Every robot has the same basic parts: INPUT (sensors), PROCESS (brain), OUTPUT (motors), POWER (battery). Want to explore one?"
+                ];
+                return getRandomFromArray(robotIntros);
             }
             
-            // Build/make
-            if (lower.includes('build') || lower.includes('make')) {
-                return "Let's build! A smoothie robot needs these parts: MOTOR, BUTTON, CUP, and BLADES. The motor makes the blades spin. What should we learn about first?";
-            }
-            
-            // How/why/what questions - teach!
+            // Questions
             if (lower.includes('how') || lower.includes('why') || lower.includes('what')) {
-                const teachings = [
-                    "Great question! In our robot, the BUTTON lets electricity flow to the MOTOR. The motor spins the BLADES. That's how it works!",
-                    "I love questions! Our smoothie robot works like this: Push button → electricity flows → motor spins → blades mix fruit!",
-                    "Thinking like an engineer! Every robot needs: something to DO the work (motor), something to CONTROL it (button), and something to HOLD things (cup)!"
+                const curious = [
+                    "Great question! Robots work by: 1) SENSING the world, 2) THINKING about what to do, 3) DOING something with motors! What part is most interesting?",
+                    "I love curious minds! Pick a topic: sensors, motors, gears, batteries, programming, or types of robots like drones and cars!",
+                    "Ask me about anything! How robots see, how they think, how they move, how they get power, or how to build one!"
                 ];
-                return teachings[Math.floor(Math.random() * teachings.length)];
+                return getRandomFromArray(curious);
             }
             
-            // Yes/agreement - move forward
-            if (lower.includes('yes') || lower.includes('yeah') || lower.includes('ok') || lower.includes('sure')) {
-                const nextSteps = [
-                    "Awesome! So our robot has a motor that spins. But how do we turn it on? We need a BUTTON! Do you know how buttons work?",
-                    "Great! Let's keep building! The motor needs ELECTRICITY to spin. Where does electricity come from?",
-                    "You're learning fast! Our smoothie robot is almost ready. Motor ✓, Button ✓... what else does it need to hold the fruit?"
+            // Agreement
+            if (lower.includes('yes') || lower.includes('yeah') || lower.includes('ok') || lower.includes('sure') || lower.includes('cool')) {
+                const nextTopics = [
+                    "Awesome! Did you know robots can have GEARS? They're wheels with teeth that change speed and power! Want to learn how?",
+                    "Great! Here's something cool: robot BRAINS can think millions of times per second! They run programs with instructions. Interested?",
+                    "Let's explore SENSORS next! Cameras see, microphones hear, touch sensors feel. Which robot sense sounds coolest?",
+                    "Fun fact: DRONES fly with four propellers! Each one spins at different speeds to move in any direction. Want to know more?",
+                    "Did you know electricity moves almost as fast as LIGHT? That's why robots can react so quickly! Want to learn about circuits?"
                 ];
-                return nextSteps[Math.floor(Math.random() * nextSteps.length)];
+                return getRandomFromArray(nextTopics);
             }
             
-            // No/don't know - explain more
-            if (lower.includes('no') || lower.includes("don't know") || lower.includes('not sure')) {
-                return "That's okay! Let me explain. A MOTOR is a machine part that spins. It uses electricity to go round and round, like a fan. Our robot's motor will spin blades to mix fruit!";
+            // Uncertainty
+            if (lower.includes('no') || lower.includes("don't know") || lower.includes('not sure') || lower.includes('confused')) {
+                return "No problem! Let's start simple. A ROBOT is a machine that can sense things, think, and do actions. Like a super smart helper! What would you like YOUR robot to do?";
             }
             
-            // Default - always bring back to robot project
-            const defaults = [
-                "Interesting! But let's focus on our robot. The MOTOR is the most important part - it makes things spin! What do you think makes a motor work?",
-                "Cool! Now, back to building! Our smoothie robot needs a motor, button, and cup. Which part should we explore?",
-                "Nice! For our robot project: the MOTOR spins, the BUTTON starts it, and the CUP holds fruit. What would you like to learn about?",
-                "Let's keep building our smoothie robot! We need to understand how the MOTOR works. It spins using electricity!"
+            // Default - teach something new!
+            const teachings = [
+                "Here's something cool: robots use SENSORS to feel the world! Cameras see, microphones hear. What sensor would YOUR robot need?",
+                "Fun robot fact: GEARS can make things stronger! A small gear turns a big gear slowly but with more POWER! Want to learn more?",
+                "Did you know? Robot ARMS have joints like your elbow! Each joint has a motor. More joints = more flexible! Interested?",
+                "Cool fact: some robots can LEARN! They try things, see what works, and get better. Like how you learn to catch a ball!",
+                "Thinking about robots: they need INPUT (sensing), PROCESSING (thinking), and OUTPUT (doing). Which part should we explore?",
+                "Robot cars use CAMERAS and RADAR to see! The brain decides: stop, go, or turn. They're like super careful drivers!"
             ];
-            return defaults[Math.floor(Math.random() * defaults.length)];
+            return getRandomFromArray(teachings);
         }
 
         function showHelp() {
