@@ -982,6 +982,112 @@
             from { box-shadow: 0 0 5px 2px rgba(255,193,7,0.5); }
             to { box-shadow: 0 0 15px 5px rgba(255,193,7,0.8); }
         }
+
+        .go-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .go-stat {
+            background: var(--white);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: var(--blue-dark);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .go-tips {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .go-tip {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            padding: 12px 20px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            color: #e65100;
+            display: inline-block;
+            animation: tipBounce 2s infinite;
+        }
+
+        @keyframes tipBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .go-celebration {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .celebration-text {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--green);
+            background: white;
+            padding: 20px 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: celebratePop 0.5s ease;
+        }
+
+        @keyframes celebratePop {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .go-game {
+            position: relative;
+            background: #d4a574;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+        }
+
+        .go-stone {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+            transition: transform 0.2s;
+            animation: stoneDrop 0.3s ease;
+        }
+
+        @keyframes stoneDrop {
+            0% { transform: translateY(-20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .go-stone.captured {
+            animation: stoneCapture 0.5s ease forwards;
+        }
+
+        @keyframes stoneCapture {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        #goBishopBox {
+            transition: all 0.3s ease;
+        }
+
+        #goBishopBox.celebrate {
+            background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+            transform: scale(1.02);
+        }
     </style>
 </head>
 <body>
@@ -1102,7 +1208,7 @@
         <!-- GO SECTION -->
         <div id="goSection" style="display:none;">
             <div class="solitaire-container">
-                <div class="solitaire-bishop">
+                <div class="solitaire-bishop" id="goBishopBox">
                     <div class="bishop-says" id="goBishop">
                         🤖 Welcome to <span class="highlight-word">GO</span>! It's one of the oldest games in the world - over 4000 years old!
                         It's simple to learn but takes a lifetime to master. Let's start with the basics!
@@ -1110,40 +1216,41 @@
                 </div>
                 
                 <div class="solitaire-controls">
-                    <button class="sol-btn" id="goLessonBtn" onclick="nextGoLesson()">📚 Next Lesson</button>
-                    <button class="sol-btn" onclick="resetGoBoard()">🆕 Clear Board</button>
-                    <button class="sol-btn" onclick="speakGoLesson()">🔊 Read to Me</button>
+                    <button class="sol-btn" id="goLessonBtn" onclick="nextGoLesson()">➡️ Next!</button>
+                    <button class="sol-btn" onclick="resetGoBoard()">🔄 Clear</button>
+                    <button class="sol-btn" onclick="speakGoLesson()">🔊 Read!</button>
+                </div>
+                
+                <!-- Fun Stats -->
+                <div class="go-stats">
+                    <span class="go-stat">🎯 Captures: <span id="goCaptureCount">0</span></span>
+                    <span class="go-stat">⭐ Lesson: <span id="goLessonNum">1</span>/8</span>
+                    <span class="go-stat" id="goTurn">⚫ Your Turn!</span>
                 </div>
                 
                 <!-- Go Board - small 5x5 for learning -->
                 <div class="go-game">
-                    <div class="go-info">
-                        <span>Lesson: <span id="goLessonNum">1</span>/8</span>
-                        <span id="goTurn">⚫ Black's Turn</span>
-                    </div>
-                    
                     <div class="go-board" id="goBoard">
                         <!-- 5x5 grid will be added by JavaScript -->
                     </div>
                     
-                    <div class="go-legend">
-                        <span>⚫ Black stone</span>
-                        <span>⚪ White stone</span>
-                        <span>🟫 Empty point</span>
+                    <!-- Celebration overlay -->
+                    <div class="go-celebration" id="goCelebration" style="display:none;">
+                        <div class="celebration-text">🎉 CAPTURED! 🎉</div>
                     </div>
                 </div>
                 
+                <div class="go-tips">
+                    <div class="go-tip" id="goTip">💡 Tip: Click anywhere on the board to place a stone!</div>
+                </div>
+                
                 <div class="solitaire-words">
-                    <h3>📚 Go Words to Learn:</h3>
+                    <h3>🎮 Go Words (tap to hear!):</h3>
                     <div class="word-list">
-                        <span class="sol-word" onclick="speakWord('stone')">STONE</span>
-                        <span class="sol-word" onclick="speakWord('board')">BOARD</span>
-                        <span class="sol-word" onclick="speakWord('capture')">CAPTURE</span>
-                        <span class="sol-word" onclick="speakWord('liberty')">LIBERTY</span>
-                        <span class="sol-word" onclick="speakWord('surround')">SURROUND</span>
-                        <span class="sol-word" onclick="speakWord('territory')">TERRITORY</span>
-                        <span class="sol-word" onclick="speakWord('black')">BLACK</span>
-                        <span class="sol-word" onclick="speakWord('white')">WHITE</span>
+                        <span class="sol-word" onclick="speakWord('stone')">⚫ STONE</span>
+                        <span class="sol-word" onclick="speakWord('capture')">🎯 CAPTURE</span>
+                        <span class="sol-word" onclick="speakWord('liberty')">💨 LIBERTY</span>
+                        <span class="sol-word" onclick="speakWord('surround')">🔲 SURROUND</span>
                     </div>
                 </div>
             </div>
@@ -2285,39 +2392,33 @@
 
         const goLessons = [
             {
-                title: "What is Go?",
-                text: "GO is a game for two players! One plays with BLACK stones, one plays with WHITE stones. You take turns putting stones on the board. The goal is to surround more empty spaces than your opponent!",
-                setup: [], // empty board
-                interactive: false
-            },
-            {
-                title: "The Board",
-                text: "This is a Go BOARD! It has lines that make a grid. We put stones where the lines CROSS, not in the squares! This is a small 5 by 5 board for learning. Real boards are much bigger!",
+                title: "Welcome to Go! 🎮",
+                text: "WOW Krishna! You're learning GO! It's like the COOLEST game ever! It's over 4000 years old - even older than dinosaurs! 🦕 Two players take turns putting stones on the board. Super simple! Ready to become a Go MASTER? 🌟",
                 setup: [],
                 interactive: false
             },
             {
-                title: "Placing Stones",
-                text: "Try clicking on the board to place a stone! BLACK always goes first. Then WHITE. You put stones where the lines cross. Once placed, stones don't move!",
+                title: "Meet the Stones! ⚫⚪",
+                text: "Look at these beautiful stones! ⚫ BLACK stones and ⚪ WHITE stones! They're like little armies! Black ALWAYS goes first - just remember: Black is the BOSS at the start! Try clicking the board to place some stones!",
                 setup: [],
                 interactive: true
             },
             {
-                title: "What is a Liberty?",
-                text: "A LIBERTY is an empty point next to your stone! See the black stone in the middle? It has 4 liberties - up, down, left, and right. Liberties are like breathing space for your stones!",
-                setup: [{pos: 12, color: 'black'}], // center stone
+                title: "Stones Need to BREATHE! 💨",
+                text: "Here's a SECRET! Stones need BREATHING ROOM! See the black stone? The empty spaces next to it are called LIBERTIES - that's a fancy word for breathing holes! This stone has 4 liberties! Count them: up, down, left, right! 👆👇👈👉",
+                setup: [{pos: 12, color: 'black'}],
                 interactive: false,
-                highlight: [7, 11, 13, 17] // the liberties
+                highlight: [7, 11, 13, 17]
             },
             {
-                title: "Corner and Edge",
-                text: "Stones on the EDGE have fewer liberties! Edge stones have only 3 liberties. CORNER stones have only 2 liberties! That makes them easier to capture.",
+                title: "Corner Stones are Weak! 📐",
+                text: "COOL TIP! Corner stones only have 2 liberties! Edge stones have 3! Middle stones have 4! So the MIDDLE is the safest place! It's like sitting in the middle of a room vs squished in a corner! 🏠",
                 setup: [{pos: 0, color: 'black'}, {pos: 2, color: 'black'}, {pos: 12, color: 'black'}],
                 interactive: false
             },
             {
-                title: "Capture!",
-                text: "When you SURROUND a stone and take away ALL its liberties, you CAPTURE it! Look: the white stones surround the black stone. Black has NO liberties left, so it's captured and removed!",
+                title: "CAPTURE! The Fun Part! 🎯",
+                text: "THIS IS SO COOL! Watch what happens! The white stones SURROUND the black stone... the black stone can't breathe... and POOF! It's captured! 💥 That's how you WIN - capture your opponent's stones!",
                 setup: [
                     {pos: 12, color: 'black'},
                     {pos: 7, color: 'white'},
@@ -2329,22 +2430,46 @@
                 captured: [12]
             },
             {
-                title: "Groups Share Liberties",
-                text: "Stones of the same color that touch become a GROUP! Groups share liberties. These two black stones together have 6 liberties! Groups are stronger than single stones.",
+                title: "Friends are STRONGER! 👫",
+                text: "SUPER SECRET! When stones TOUCH, they become FRIENDS and share their liberties! These two black stones together have 6 liberties! That's MORE than alone! Friends help each other survive! Just like real life! 💪",
                 setup: [{pos: 11, color: 'black'}, {pos: 12, color: 'black'}],
                 interactive: false,
                 highlight: [6, 7, 10, 13, 16, 17]
             },
             {
-                title: "Practice Time!",
-                text: "Now you try! Place stones on the board. Try to surround your opponent's stones to capture them! Remember: stones need LIBERTIES to survive. Take away all liberties to capture!",
+                title: "Capture Challenge! 🏆",
+                text: "YOUR TURN! I put a white stone in the corner. Can you CAPTURE it? Remember: surround it so it can't breathe! Put black stones around it! You need to fill ALL the empty spaces next to it! GO GO GO! 🚀",
+                setup: [{pos: 0, color: 'white'}],
+                interactive: true,
+                challenge: 'capture',
+                target: 0
+            },
+            {
+                title: "You're a Go STAR! ⭐",
+                text: "WOW KRISHNA! You learned Go! You know about stones, liberties, and capturing! You're AMAZING! Now practice and have fun! The more you play, the better you get! You're officially a Go player now! 🎉🏆🌟",
                 setup: [],
                 interactive: true
             }
         ];
 
+        let goCaptureCount = 0;
+        let goChallenge = null;
+
+        const goTips = [
+            "💡 Stones in the MIDDLE are safest - they have 4 liberties!",
+            "💡 Corner stones are easy to capture - only 2 liberties!",
+            "💡 Connect your stones to make them STRONGER!",
+            "💡 Surround enemy stones to capture them!",
+            "💡 Black always goes first!",
+            "💡 Once placed, stones don't move!",
+            "💡 Groups of friends share their breathing space!",
+            "💡 Take away ALL liberties to capture!"
+        ];
+
         function initGoGame() {
             goLesson = 1;
+            goCaptureCount = 0;
+            document.getElementById('goCaptureCount').textContent = '0';
             renderGoLesson();
         }
 
@@ -2379,13 +2504,18 @@
             }
         }
 
+        function showRandomTip() {
+            const tip = goTips[Math.floor(Math.random() * goTips.length)];
+            document.getElementById('goTip').textContent = tip;
+        }
+
         function renderGoLesson() {
             const lesson = goLessons[goLesson - 1];
             
             // Update UI
             document.getElementById('goLessonNum').textContent = goLesson;
             document.getElementById('goBishop').innerHTML = 
-                `🤖 <b>Lesson ${goLesson}: ${lesson.title}</b><br><br>${lesson.text}`;
+                `🤖 <b>${lesson.title}</b><br><br>${lesson.text}`;
             
             // Setup board
             goBoard = Array(25).fill(null);
@@ -2394,8 +2524,19 @@
             });
             
             goInteractive = lesson.interactive || false;
+            goChallenge = lesson.challenge || null;
             goTurn = 'black';
-            document.getElementById('goTurn').textContent = goInteractive ? '⚫ Black\'s Turn' : '👀 Watch & Learn';
+            
+            if (goChallenge) {
+                document.getElementById('goTurn').textContent = '🎯 Challenge Mode!';
+                document.getElementById('goTip').textContent = '💡 Surround the white stone to capture it!';
+            } else if (goInteractive) {
+                document.getElementById('goTurn').textContent = '⚫ Your Turn!';
+                showRandomTip();
+            } else {
+                document.getElementById('goTurn').textContent = '👀 Watch & Learn';
+                document.getElementById('goTip').textContent = '💡 Watch what happens, then click Next!';
+            }
             
             renderGoBoard();
             
@@ -2404,7 +2545,7 @@
                 setTimeout(() => {
                     lesson.highlight.forEach(pos => {
                         const points = document.querySelectorAll('.go-point');
-                        points[pos].classList.add('go-highlight');
+                        if (points[pos]) points[pos].classList.add('go-highlight');
                     });
                 }, 500);
             }
@@ -2412,25 +2553,51 @@
             // Show capture animation if specified
             if (lesson.captured) {
                 setTimeout(() => {
+                    // Add capture animation
+                    const points = document.querySelectorAll('.go-point');
                     lesson.captured.forEach(pos => {
-                        goBoard[pos] = null;
+                        const stone = points[pos].querySelector('.go-stone');
+                        if (stone) stone.classList.add('captured');
                     });
-                    renderGoBoard();
-                    speak("Captured! The stone is removed!");
-                }, 2000);
+                    
+                    // Show celebration
+                    showGoCelebration("POOF! 💨");
+                    speak("Poof! The stone is captured and removed!");
+                    
+                    setTimeout(() => {
+                        lesson.captured.forEach(pos => {
+                            goBoard[pos] = null;
+                        });
+                        renderGoBoard();
+                    }, 500);
+                }, 2500);
             }
             
             // Update button text
             if (goLesson >= goLessons.length) {
-                document.getElementById('goLessonBtn').textContent = '🔄 Start Over';
+                document.getElementById('goLessonBtn').textContent = '🔄 Play Again!';
             } else {
-                document.getElementById('goLessonBtn').textContent = '📚 Next Lesson';
+                document.getElementById('goLessonBtn').textContent = '➡️ Next!';
             }
+        }
+
+        function showGoCelebration(text) {
+            const celeb = document.getElementById('goCelebration');
+            celeb.querySelector('.celebration-text').textContent = text;
+            celeb.style.display = 'block';
+            document.getElementById('goBishopBox').classList.add('celebrate');
+            
+            setTimeout(() => {
+                celeb.style.display = 'none';
+                document.getElementById('goBishopBox').classList.remove('celebrate');
+            }, 1500);
         }
 
         function nextGoLesson() {
             if (goLesson >= goLessons.length) {
                 goLesson = 1;
+                goCaptureCount = 0;
+                document.getElementById('goCaptureCount').textContent = '0';
             } else {
                 goLesson++;
             }
@@ -2440,31 +2607,48 @@
 
         function speakGoLesson() {
             const lesson = goLessons[goLesson - 1];
-            speak(`Lesson ${goLesson}: ${lesson.title}. ${lesson.text}`);
+            // Clean text for speaking (remove emojis)
+            const cleanText = lesson.text.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').replace(/[⚫⚪]/g, '');
+            speak(cleanText);
         }
 
         function placeGoStone(pos) {
             if (!goInteractive) {
-                speak("This lesson is for watching! Click Next Lesson to continue.");
+                speak("Watch and learn! Then click Next!");
                 return;
             }
             
             if (goBoard[pos] !== null) {
-                speak("That spot is taken! Try another one.");
+                speak("Oops! That spot is taken! Try an empty one!");
                 return;
             }
             
             goBoard[pos] = goTurn;
             renderGoBoard();
             
-            speak(goTurn === 'black' ? 'Black stone placed!' : 'White stone placed!');
+            const encouragements = ['Nice!', 'Good one!', 'Great move!', 'Awesome!', 'Cool!'];
+            speak(encouragements[Math.floor(Math.random() * encouragements.length)]);
             
             // Check for captures
-            checkGoCaptures(goTurn === 'black' ? 'white' : 'black');
+            const capturedCount = checkGoCaptures(goTurn === 'black' ? 'white' : 'black');
+            
+            // Check if challenge completed
+            if (goChallenge === 'capture' && capturedCount > 0) {
+                setTimeout(() => {
+                    showGoCelebration("🏆 YOU DID IT! 🏆");
+                    speak("Amazing! You captured it! You're a natural!");
+                    document.getElementById('goBishop').innerHTML = 
+                        "🤖 <b>WOW! YOU DID IT!</b><br><br>You captured the stone! That was PERFECT! You surrounded it and took away all its breathing room! You're going to be GREAT at Go! 🌟";
+                }, 600);
+            }
             
             // Switch turn
             goTurn = goTurn === 'black' ? 'white' : 'black';
-            document.getElementById('goTurn').textContent = goTurn === 'black' ? '⚫ Black\'s Turn' : '⚪ White\'s Turn';
+            if (goInteractive && !goChallenge) {
+                document.getElementById('goTurn').textContent = goTurn === 'black' ? '⚫ Black\'s Turn' : '⚪ White\'s Turn';
+            }
+            
+            showRandomTip();
         }
 
         function showGoPreview(pos) {
@@ -2544,12 +2728,31 @@
             }
             
             if (captured.length > 0) {
+                // Animate captures
+                const points = document.querySelectorAll('.go-point');
                 captured.forEach(pos => {
-                    goBoard[pos] = null;
+                    const stone = points[pos].querySelector('.go-stone');
+                    if (stone) stone.classList.add('captured');
                 });
-                renderGoBoard();
-                speak(`Captured ${captured.length} ${captured.length === 1 ? 'stone' : 'stones'}!`);
+                
+                // Show celebration
+                showGoCelebration("🎯 CAPTURED! 🎯");
+                
+                setTimeout(() => {
+                    captured.forEach(pos => {
+                        goBoard[pos] = null;
+                    });
+                    renderGoBoard();
+                }, 500);
+                
+                // Update capture count
+                goCaptureCount += captured.length;
+                document.getElementById('goCaptureCount').textContent = goCaptureCount;
+                
+                speak(`Yes! You captured ${captured.length} ${captured.length === 1 ? 'stone' : 'stones'}! Amazing!`);
             }
+            
+            return captured.length;
         }
 
         function resetGoBoard() {
