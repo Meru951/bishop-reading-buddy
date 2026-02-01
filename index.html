@@ -402,6 +402,26 @@
             color: var(--white);
         }
 
+        .home-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5em;
+            background: var(--white);
+            border: 3px solid var(--blue-dark);
+            border-radius: 50%;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .home-btn:hover {
+            transform: scale(1.1);
+            background: var(--blue-light);
+        }
+
         /* Solitaire Styles */
         .solitaire-container {
             background: var(--white);
@@ -1100,8 +1120,9 @@
 
         <!-- Main Tabs -->
         <div class="main-tabs">
-            <button class="main-tab active" id="chatTab" onclick="switchTab('chat')">🗨️ Chat & Learn</button>
-            <button class="main-tab" id="solitaireTab" onclick="switchTab('solitaire')">🃏 Solitaire</button>
+            <a href="krishna.html" class="home-btn" title="Back to Home">🏠</a>
+            <button class="main-tab active" id="chatTab" onclick="switchTab('chat')">🤖 Robots</button>
+            <button class="main-tab" id="solitaireTab" onclick="switchTab('solitaire')">🃏 Cards</button>
             <button class="main-tab" id="goTab" onclick="switchTab('go')">⚫ Go</button>
         </div>
 
@@ -2926,15 +2947,19 @@
         window.onload = function() {
             updateProgress();
             
-            // Check if we should start on Go tab (from landing page)
-            const startTab = localStorage.getItem('startTab');
+            // Check URL for which tab to start on
             const urlParams = new URLSearchParams(window.location.search);
             const tabParam = urlParams.get('tab');
+            const startTab = localStorage.getItem('startTab');
             
-            if (startTab === 'go' || tabParam === 'go' || window.location.hash === '#go') {
+            if (tabParam === 'go' || startTab === 'go') {
                 setTimeout(() => switchTab('go'), 100);
-                localStorage.removeItem('startTab');
+            } else if (tabParam === 'solitaire' || startTab === 'solitaire') {
+                setTimeout(() => switchTab('solitaire'), 100);
+            } else if (tabParam === 'chat' || startTab === 'chat') {
+                setTimeout(() => switchTab('chat'), 100);
             }
+            localStorage.removeItem('startTab');
             
             // Previous conversation from Telegram
             const previousChat = [

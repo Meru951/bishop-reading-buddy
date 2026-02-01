@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bishop - Krishna's Learning Buddy!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* Header with Bishop */
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .bishop-big {
+            font-size: 5em;
+            animation: wave 1s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        .greeting {
+            font-size: 1.8em;
+            color: white;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .krishna-name {
+            font-size: 3em;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ffd700; }
+            to { text-shadow: 0 0 20px #ffd700, 0 0 30px #ffa500; }
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            color: rgba(255,255,255,0.9);
+            margin-top: 10px;
+        }
+
+        /* Course Cards */
+        .courses {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 25px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            border: 4px solid transparent;
+        }
+
+        .course-card:hover {
+            transform: scale(1.03) translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .course-card:active {
+            transform: scale(0.98);
+        }
+
+        .course-card.go {
+            border-color: #4a4a4a;
+        }
+        .course-card.go:hover {
+            background: linear-gradient(135deg, #fff, #e8e8e8);
+        }
+
+        .course-card.solitaire {
+            border-color: #e74c3c;
+        }
+        .course-card.solitaire:hover {
+            background: linear-gradient(135deg, #fff, #ffe8e8);
+        }
+
+        .course-card.robot {
+            border-color: #3498db;
+        }
+        .course-card.robot:hover {
+            background: linear-gradient(135deg, #fff, #e8f4ff);
+        }
+
+        .course-icon {
+            font-size: 4em;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .course-info {
+            flex: 1;
+        }
+
+        .course-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .go .course-title { color: #2c3e50; }
+        .solitaire .course-title { color: #c0392b; }
+        .robot .course-title { color: #2980b9; }
+
+        .course-desc {
+            font-size: 1.1em;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .course-arrow {
+            font-size: 2em;
+            color: #ccc;
+        }
+
+        /* Fun footer */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255,255,255,0.8);
+            font-size: 1.1em;
+        }
+
+        .stars {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="bishop-big">🤖</div>
+            <div class="greeting">Hi there,</div>
+            <div class="krishna-name">KRISHNA!</div>
+            <div class="subtitle">What do you want to learn today?</div>
+        </div>
+
+        <!-- Course Cards -->
+        <div class="courses">
+            <!-- Go -->
+            <a href="index.html?tab=go" class="course-card go">
+                <div class="course-icon">⚫⚪</div>
+                <div class="course-info">
+                    <div class="course-title">Play Go</div>
+                    <div class="course-desc">Learn the ancient game of strategy!</div>
+                </div>
+                <div class="course-arrow">→</div>
+            </a>
+
+            <!-- Solitaire -->
+            <a href="index.html?tab=solitaire" class="course-card solitaire">
+                <div class="course-icon">🃏</div>
+                <div class="course-info">
+                    <div class="course-title">Play Solitaire</div>
+                    <div class="course-desc">Match cards and train your memory!</div>
+                </div>
+                <div class="course-arrow">→</div>
+            </a>
+
+            <!-- Robotics -->
+            <a href="index.html?tab=chat" class="course-card robot">
+                <div class="course-icon">🤖</div>
+                <div class="course-info">
+                    <div class="course-title">Learn Robotics</div>
+                    <div class="course-desc">Chat with Bishop about robots!</div>
+                </div>
+                <div class="course-arrow">→</div>
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="stars">⭐ ⭐ ⭐</div>
+            <div>Tap a card to start learning!</div>
+        </div>
+    </div>
+</body>
+</html>
