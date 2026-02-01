@@ -26,44 +26,48 @@
             font-family: 'Comic Sans MS', 'Chalkboard', 'Comic Neue', cursive, sans-serif;
             background: linear-gradient(135deg, var(--blue-light) 0%, var(--blue-accent) 100%);
             min-height: 100vh;
-            padding: 15px;
+            padding: 10px;
         }
 
         .container {
-            max-width: 700px;
+            max-width: 95%;
+            width: 900px;
             margin: 0 auto;
         }
 
-        /* Header */
+        /* Header - compact */
         .header {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .bishop-avatar {
-            width: 90px;
-            height: 90px;
-            background: var(--blue-dark);
-            border-radius: 50%;
-            margin: 0 auto 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 45px;
-            border: 4px solid var(--white);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .bishop-avatar {
+            width: 60px;
+            height: 60px;
+            background: var(--blue-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            border: 3px solid var(--white);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
             animation: bounce 2s infinite;
         }
 
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
+            50% { transform: translateY(-4px); }
         }
 
         .header h1 {
             color: var(--blue-dark);
-            font-size: 1.6em;
+            font-size: 1.5em;
             text-shadow: 2px 2px 0 var(--white);
+            margin: 0;
         }
 
         /* Top Controls */
@@ -102,13 +106,13 @@
             background: #f57c00;
         }
 
-        /* Chat Area */
+        /* Chat Area - BIGGER */
         .chat-area {
             background: var(--white);
             border-radius: 25px;
-            padding: 18px;
+            padding: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            min-height: 420px;
+            min-height: 55vh;
             display: flex;
             flex-direction: column;
         }
@@ -116,11 +120,11 @@
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 8px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             gap: 18px;
-            max-height: 320px;
+            max-height: 50vh;
         }
 
         /* Messages */
@@ -830,6 +834,15 @@
             container.scrollTop = container.scrollHeight;
         }
 
+        // Disable/enable controls during reading
+        function setControlsEnabled(enabled) {
+            document.querySelectorAll('.control-btn, .send-btn, .chat-input').forEach(el => {
+                el.disabled = !enabled;
+                el.style.opacity = enabled ? '1' : '0.5';
+                el.style.pointerEvents = enabled ? 'auto' : 'none';
+            });
+        }
+
         // Read message with karaoke
         async function readMessage(msgId) {
             if (isReading) {
@@ -847,6 +860,11 @@
             currentReadingMsg = msgId;
             btn.innerHTML = '⏹️ Stop';
             btn.classList.add('reading');
+            
+            // Disable other controls during reading
+            setControlsEnabled(false);
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'auto';
 
             // Read word by word with highlighting
             for (let i = 0; i < words.length && isReading; i++) {
@@ -863,19 +881,19 @@
 
             stopReading();
 
-            // Show quiz for a vocab word
-            if (Math.random() > 0.4) {
-                const vocabWords = Array.from(words).filter(w => w.classList.contains('vocab'));
-                if (vocabWords.length > 0) {
-                    const randomWord = vocabWords[Math.floor(Math.random() * vocabWords.length)];
-                    setTimeout(() => showQuiz(randomWord.dataset.word), 400);
-                }
+            // Focus test OR vocab quiz after reading
+            if (Math.random() > 0.3) {
+                const msgText = msgDiv.querySelector('.message-bubble').textContent;
+                setTimeout(() => showFocusTest(msgText), 500);
             }
         }
 
         function stopReading() {
             isReading = false;
             speechSynthesis.cancel();
+            
+            // Re-enable controls
+            setControlsEnabled(true);
             
             if (currentReadingMsg) {
                 const msgDiv = document.getElementById(currentReadingMsg);
@@ -889,6 +907,68 @@
                 }
             }
             currentReadingMsg = null;
+        }
+
+        // Focus test - ask about what was just read
+        function showFocusTest(messageText) {
+            const focusQuestions = [
+                { q: "What did Bishop talk about?", getOptions: (text) => {
+                    const topics = [];
+                    if (text.toLowerCase().includes('robot')) topics.push('Robots');
+                    if (text.toLowerCase().includes('mango') || text.toLowerCase().includes('smoothie')) topics.push('Smoothies');
+                    if (text.toLowerCase().includes('motor') || text.toLowerCase().includes('spin')) topics.push('Motors');
+                    if (text.toLowerCase().includes('microphone') || text.toLowerCase().includes('hear')) topics.push('Microphones');
+                    if (topics.length === 0) topics.push('Robots');
+                    return { correct: topics[0], options: [topics[0], 'Dinosaurs', 'Airplanes'] };
+                }},
+                { q: "Bishop said robots are...", getOptions: (text) => {
+                    if (text.toLowerCase().includes('cool')) return { correct: 'Cool!', options: ['Cool!', 'Boring', 'Scary'] };
+                    if (text.toLowerCase().includes('smart')) return { correct: 'Smart!', options: ['Smart!', 'Silly', 'Slow'] };
+                    return { correct: 'Fun!', options: ['Fun!', 'Boring', 'Mean'] };
+                }},
+                { q: "Were you paying attention?", getOptions: () => {
+                    return { correct: 'Yes!', options: ['Yes!', 'Maybe...', 'No...'] };
+                }}
+            ];
+
+            const question = focusQuestions[Math.floor(Math.random() * focusQuestions.length)];
+            const result = question.getOptions(messageText);
+            
+            document.getElementById('quizTitle').textContent = '👀 Focus Check!';
+            document.getElementById('quizWord').textContent = question.q;
+            document.getElementById('quizProgress').textContent = 'Were you listening?';
+            
+            const optionsDiv = document.getElementById('quizOptions');
+            optionsDiv.innerHTML = '';
+            
+            const shuffled = [...result.options].sort(() => Math.random() - 0.5);
+            shuffled.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-option';
+                btn.textContent = option;
+                btn.onclick = () => {
+                    document.querySelectorAll('.quiz-option').forEach(b => b.disabled = true);
+                    if (option === result.correct) {
+                        btn.classList.add('correct');
+                        document.getElementById('quizFeedback').textContent = '🎉 Great focus! You were listening!';
+                        document.getElementById('quizFeedback').style.background = '#c8e6c9';
+                        speak('Great job! You were paying attention!');
+                    } else {
+                        btn.classList.add('wrong');
+                        document.getElementById('quizFeedback').textContent = '👀 Let\'s focus more next time!';
+                        document.getElementById('quizFeedback').style.background = '#ffcdd2';
+                        speak('Let\'s focus more next time!');
+                    }
+                    setTimeout(closeQuiz, 1500);
+                };
+                optionsDiv.appendChild(btn);
+            });
+
+            document.getElementById('quizFeedback').textContent = '';
+            document.getElementById('quizOverlay').classList.add('show');
+            document.getElementById('quizPopup').classList.add('show');
+
+            speak(question.q);
         }
 
         // Quiz
