@@ -382,12 +382,221 @@
             font-size: 1.5em;
             margin-top: 5px;
         }
+
+        /* Intro Screen */
+        .intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .intro-card {
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .intro-bishop {
+            font-size: 4em;
+            margin-bottom: 10px;
+            animation: bounce 1s infinite;
+        }
+
+        .intro-title {
+            font-size: 2em;
+            color: #2c3e50;
+            margin-bottom: 25px;
+        }
+
+        .intro-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        .intro-icon {
+            font-size: 2.5em;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .intro-text {
+            font-size: 1.1em;
+            line-height: 1.4;
+            color: #2c3e50;
+        }
+
+        .intro-text strong {
+            color: #e74c3c;
+            font-size: 1.1em;
+        }
+
+        .intro-example {
+            background: #d4a574;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .example-title {
+            font-weight: bold;
+            color: #5d4037;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .example-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            max-width: 150px;
+            margin: 0 auto 10px;
+            background: #c9a66b;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .example-point {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .example-point::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(to right, transparent 45%, #8b7355 45%, #8b7355 55%, transparent 55%),
+                linear-gradient(to bottom, transparent 45%, #8b7355 45%, #8b7355 55%, transparent 55%);
+        }
+
+        .example-stone {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+            box-shadow: 1px 2px 3px rgba(0,0,0,0.3);
+        }
+
+        .example-stone.black {
+            background: radial-gradient(circle at 30% 30%, #555, #111);
+        }
+
+        .example-stone.white {
+            background: radial-gradient(circle at 30% 30%, #fff, #ddd);
+        }
+
+        .example-stone.animated {
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            to { transform: scale(1); }
+        }
+
+        .example-stone.captured {
+            animation: poof 0.5s ease forwards;
+        }
+
+        @keyframes poof {
+            to { transform: scale(0); opacity: 0; }
+        }
+
+        .example-caption {
+            font-size: 1.1em;
+            color: #5d4037;
+            font-weight: bold;
+        }
+
+        .intro-btn {
+            padding: 18px 40px;
+            font-size: 1.4em;
+            font-family: inherit;
+            font-weight: bold;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.4);
+            transition: all 0.3s;
+        }
+
+        .intro-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(46, 204, 113, 0.5);
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Intro Screen - explains the game FIRST -->
+        <div class="intro-screen" id="introScreen">
+            <div class="intro-card">
+                <div class="intro-bishop">🤖</div>
+                <h1 class="intro-title">Let's Play GO!</h1>
+                
+                <div class="intro-section">
+                    <div class="intro-icon">🎯</div>
+                    <div class="intro-text">
+                        <strong>What's the goal?</strong><br>
+                        Capture the other player's stones!
+                    </div>
+                </div>
+                
+                <div class="intro-section">
+                    <div class="intro-icon">⚫</div>
+                    <div class="intro-text">
+                        <strong>How do you capture?</strong><br>
+                        Surround a stone on ALL sides — then it's yours!
+                    </div>
+                </div>
+                
+                <div class="intro-section">
+                    <div class="intro-icon">🏆</div>
+                    <div class="intro-text">
+                        <strong>How do you win?</strong><br>
+                        Capture more stones than me!
+                    </div>
+                </div>
+
+                <div class="intro-example">
+                    <div class="example-title">Watch! This is how you capture:</div>
+                    <div class="example-board" id="exampleBoard"></div>
+                    <div class="example-caption" id="exampleCaption">White stone in the middle...</div>
+                </div>
+                
+                <button class="intro-btn" onclick="startGame()">Got it! Let's Play! 🎮</button>
+            </div>
+        </div>
+
         <!-- Bishop talks here -->
-        <div class="bishop-chat">
+        <div class="bishop-chat" id="bishopChat" style="display:none;">
             <button class="sound-btn" onclick="speakMessage()">🔊</button>
             <div class="bishop-header">
                 <span class="bishop-avatar">🤖</span>
@@ -400,7 +609,7 @@
         </div>
 
         <!-- Game Area -->
-        <div class="game-area">
+        <div class="game-area" style="display:none;">
             <div class="game-header">
                 <div class="turn-indicator">
                     <span id="turnStone">⚫</span>
@@ -421,7 +630,7 @@
         </div>
 
         <!-- Progress -->
-        <div class="level-bar">
+        <div class="level-bar" style="display:none;">
             <div>Level <span id="level">1</span>: <span id="levelName">First Steps</span></div>
             <div class="level-stars" id="stars">⭐</div>
         </div>
@@ -445,83 +654,162 @@
         let moveCount = 0;
         let lastMessage = '';
 
-        // Levels - progressive challenges
+        // Levels - progressive challenges with 6-year-old friendly language
         const levels = [
             {
-                name: "First Steps",
-                intro: "Tap anywhere to put down a black stone! ⚫",
+                name: "Tap to Play!",
+                intro: "Your turn! Tap anywhere to put down YOUR stone! You're <span class='highlight'>BLACK ⚫</span>!",
                 goal: "place3",
                 goalCount: 3,
                 setup: [],
-                hint: "Just tap! Put your stones on the board!"
+                hint: "Just tap anywhere on the brown board! That's where your stone goes!"
             },
             {
-                name: "White Plays Too",
-                intro: "Now I'll play too! After you place a stone, I'll put a white one. ⚪",
+                name: "Taking Turns",
+                intro: "Now we take turns! You put a black stone ⚫, then I put a white stone ⚪. Just like any game!",
                 goal: "place5",
                 goalCount: 5,
                 setup: [],
-                hint: "Keep playing! We take turns."
+                hint: "Keep tapping to put down your stones! I'll put mine after you."
             },
             {
-                name: "Surround to Capture!",
-                intro: "See that white stone? <span class='highlight'>Surround it</span> to capture it! Put black stones on ALL sides!",
+                name: "Capture Time!",
+                intro: "See my white stone? <span class='highlight'>Trap it!</span> Put YOUR stones on ALL 4 sides — top, bottom, left, right!",
                 goal: "capture",
                 goalCount: 1,
                 setup: [{pos: 12, color: 'white'}],
-                hint: "Put black stones above, below, left, and right of the white stone!",
+                hint: "Put black stones above it, below it, left of it, and right of it! All 4 sides!",
                 highlightTarget: 12
             },
             {
-                name: "Corner Trap!",
-                intro: "The corner is easier! This white stone only needs <span class='highlight'>2 stones</span> to capture!",
+                name: "Easy Corner!",
+                intro: "Corners are EASY! This stone only has <span class='highlight'>2 sides</span> to trap! Just put stones on those 2 sides!",
                 goal: "capture",
                 goalCount: 1,
                 setup: [{pos: 0, color: 'white'}],
-                hint: "Put one stone to the right, one below!",
+                hint: "The corner only touches 2 spots! Put a stone to the right, and one below!",
                 highlightTarget: 0
             },
             {
-                name: "Edge Capture!",
-                intro: "Edge stones need <span class='highlight'>3 stones</span> to capture. You can do it!",
+                name: "Edge Trap!",
+                intro: "Stones on the edge have <span class='highlight'>3 sides</span>. Trap all 3 and you capture it!",
                 goal: "capture",
                 goalCount: 1,
                 setup: [{pos: 2, color: 'white'}],
-                hint: "Surround the top, left, right, and bottom!",
+                hint: "This stone is on the top edge. Put stones on the left, right, and below it!",
                 highlightTarget: 2
             },
             {
-                name: "Save Your Stone!",
-                intro: "Uh oh! Your black stone is almost captured! <span class='highlight'>Connect another stone</span> to save it!",
+                name: "Help Your Friend!",
+                intro: "Oh no! Your stone is almost trapped! <span class='highlight'>Put another stone NEXT to it</span> to save it! Friends help friends!",
                 goal: "connect",
                 goalCount: 1,
                 setup: [{pos: 12, color: 'black'}, {pos: 7, color: 'white'}, {pos: 11, color: 'white'}, {pos: 17, color: 'white'}],
-                hint: "Put a black stone next to your other black stone!",
+                hint: "Put a black stone right next to your other black stone — they become friends and share space!",
                 highlightTarget: 12,
                 dangerStone: 12
             },
             {
-                name: "Double Capture!",
-                intro: "Can you capture <span class='highlight'>TWO stones</span> at once? They're connected!",
+                name: "Double Trouble!",
+                intro: "Two white stones together! They're <span class='highlight'>friends sharing sides</span>. You need to trap them BOTH at once!",
                 goal: "capture",
                 goalCount: 2,
                 setup: [{pos: 11, color: 'white'}, {pos: 12, color: 'white'}],
-                hint: "Surround both white stones completely!",
+                hint: "Surround BOTH white stones together. Cover all the empty spots touching them!",
                 highlightTarget: 11
             },
             {
-                name: "Free Play!",
-                intro: "You're a Go player now! Play freely and try to capture my stones! 🎉",
+                name: "You're a Go Player!",
+                intro: "You know how to play GO! 🎉 Now just have fun! Try to capture more stones than me!",
                 goal: "capture",
                 goalCount: 3,
                 setup: [],
-                hint: "Surround my white stones to capture them!"
+                hint: "Surround my white stones to capture them! Remember: cover ALL sides!"
             }
         ];
 
         // Initialize
         function init() {
+            // Show intro first with animated example
+            showIntroAnimation();
+        }
+
+        function showIntroAnimation() {
+            const board = document.getElementById('exampleBoard');
+            board.innerHTML = '';
+            
+            // Create 3x3 mini board
+            for (let i = 0; i < 9; i++) {
+                const point = document.createElement('div');
+                point.className = 'example-point';
+                point.id = 'ex' + i;
+                board.appendChild(point);
+            }
+
+            // Animate the capture example
+            const caption = document.getElementById('exampleCaption');
+            
+            // Step 1: White stone appears in center
+            setTimeout(() => {
+                const center = document.getElementById('ex4');
+                const white = document.createElement('div');
+                white.className = 'example-stone white animated';
+                white.id = 'whiteStone';
+                center.appendChild(white);
+                caption.textContent = "Here's a white stone ⚪";
+            }, 500);
+
+            // Step 2: Black stones surround it
+            setTimeout(() => {
+                const top = document.getElementById('ex1');
+                const b1 = document.createElement('div');
+                b1.className = 'example-stone black animated';
+                top.appendChild(b1);
+                caption.textContent = "Put black stones around it...";
+            }, 1500);
+
+            setTimeout(() => {
+                const left = document.getElementById('ex3');
+                const b2 = document.createElement('div');
+                b2.className = 'example-stone black animated';
+                left.appendChild(b2);
+            }, 2000);
+
+            setTimeout(() => {
+                const right = document.getElementById('ex5');
+                const b3 = document.createElement('div');
+                b3.className = 'example-stone black animated';
+                right.appendChild(b3);
+            }, 2500);
+
+            setTimeout(() => {
+                const bottom = document.getElementById('ex7');
+                const b4 = document.createElement('div');
+                b4.className = 'example-stone black animated';
+                bottom.appendChild(b4);
+                caption.textContent = "Surround ALL sides...";
+            }, 3000);
+
+            // Step 3: White stone captured!
+            setTimeout(() => {
+                const white = document.getElementById('whiteStone');
+                if (white) white.classList.add('captured');
+                caption.innerHTML = "CAPTURED! 🎉";
+            }, 4000);
+
+            // Repeat animation
+            setTimeout(() => {
+                showIntroAnimation();
+            }, 6000);
+        }
+
+        function startGame() {
+            document.getElementById('introScreen').style.display = 'none';
+            document.getElementById('bishopChat').style.display = 'block';
+            document.querySelector('.game-area').style.display = 'block';
+            document.querySelector('.level-bar').style.display = 'block';
             loadLevel(level);
+            speak("Alright Krishna! Your turn. Tap to place a black stone!");
         }
 
         function loadLevel(lvl) {
