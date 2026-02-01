@@ -419,6 +419,177 @@
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
+
+        /* Typing Helper */
+        .typing-helper {
+            display: none;
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 20px;
+            padding: 15px;
+            margin-top: 12px;
+            text-align: center;
+            animation: slideUp 0.3s ease;
+        }
+
+        .typing-helper.show {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .helper-text {
+            margin-bottom: 12px;
+        }
+
+        #helperPrompt {
+            color: var(--blue-dark);
+            font-size: 1em;
+        }
+
+        .target-word {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--blue-dark);
+            margin: 8px 0;
+            letter-spacing: 4px;
+        }
+
+        .target-word .letter {
+            display: inline-block;
+            padding: 2px 4px;
+            margin: 0 2px;
+            border-radius: 5px;
+        }
+
+        .target-word .letter.typed {
+            background: var(--green);
+            color: white;
+        }
+
+        .target-word .letter.current {
+            background: var(--orange);
+            color: white;
+            animation: pulse 0.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.15); }
+        }
+
+        .letter-guide {
+            font-size: 1.1em;
+            color: #555;
+            margin: 8px 0;
+        }
+
+        .current-letter {
+            display: inline-block;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--orange);
+            background: white;
+            padding: 5px 15px;
+            border-radius: 10px;
+            margin-left: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Keyboard */
+        .keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin: 12px auto;
+            max-width: 100%;
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .key {
+            min-width: 28px;
+            height: 36px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: inherit;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-transform: uppercase;
+        }
+
+        .key:hover {
+            background: var(--blue-light);
+        }
+
+        .key.highlight {
+            background: var(--orange);
+            color: white;
+            border-color: var(--orange);
+            transform: scale(1.15);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+            animation: keyPulse 0.5s infinite alternate;
+        }
+
+        @keyframes keyPulse {
+            from { box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4); }
+            to { box-shadow: 0 6px 20px rgba(255, 152, 0, 0.6); }
+        }
+
+        .key.space {
+            min-width: 120px;
+        }
+
+        .key.correct {
+            background: var(--green);
+            color: white;
+            border-color: var(--green);
+        }
+
+        .helper-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .helper-btn {
+            padding: 8px 18px;
+            font-size: 0.95em;
+            font-family: inherit;
+            background: var(--blue-accent);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+
+        .helper-btn.skip-btn {
+            background: #9e9e9e;
+        }
+
+        .celebration {
+            font-size: 1.5em;
+            color: var(--green);
+            margin-top: 10px;
+            animation: celebrate 0.5s ease;
+        }
+
+        @keyframes celebrate {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -434,14 +605,31 @@
             <button class="control-btn active" id="slowBtn" onclick="setSpeed('slow')">🐢 Slow</button>
             <button class="control-btn" id="normalBtn" onclick="setSpeed('normal')">🐇 Fast</button>
             <button class="control-btn test-btn" onclick="startTest()">📝 Test Me!</button>
+            <button class="control-btn" onclick="practiceTyping()" style="background:#9c27b0;color:white;">⌨️ Type!</button>
         </div>
 
         <!-- Chat Area -->
         <div class="chat-area">
             <div class="chat-messages" id="chatMessages"></div>
             <div class="chat-input-area">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Talk to Bishop..." onkeypress="handleKeyPress(event)">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Talk to Bishop..." onkeypress="handleKeyPress(event)" oninput="checkTyping(event)">
                 <button class="send-btn" onclick="sendMessage()">Send! 🚀</button>
+            </div>
+            
+            <!-- Typing Helper -->
+            <div class="typing-helper" id="typingHelper">
+                <div class="helper-text">
+                    <span id="helperPrompt">Bishop says: Type this word!</span>
+                    <div class="target-word" id="targetWord"></div>
+                    <div class="letter-guide">
+                        Find the letter: <span class="current-letter" id="currentLetter"></span>
+                    </div>
+                </div>
+                <div class="keyboard" id="keyboard"></div>
+                <div class="helper-buttons">
+                    <button class="helper-btn" onclick="speakCurrentLetter()">🔊 Say it</button>
+                    <button class="helper-btn skip-btn" onclick="skipTypingHelp()">Skip →</button>
+                </div>
             </div>
         </div>
 
@@ -594,6 +782,11 @@
             setTimeout(() => {
                 const response = getBishopResponse(text);
                 addMessage(response, 'bishop');
+                
+                // Suggest typing help after Bishop responds
+                if (Math.random() > 0.3) {
+                    suggestTyping();
+                }
             }, 500);
         }
 
@@ -893,9 +1086,190 @@
                 "🔊 Tap 'Read to me!' - words light up!\n" +
                 "📖 Tap dotted words to learn them\n" +
                 "📝 Tap 'Test Me!' to quiz yourself\n" +
+                "⌨️ Typing helper shows you which keys!\n" +
                 "🐢 Slow = Practice mode\n" +
                 "🐇 Fast = Fluency mode\n\n" +
                 "⭐ Earn stars by learning words!");
+        }
+
+        // ===== TYPING HELPER =====
+        let typingHelperActive = false;
+        let targetWord = '';
+        let currentLetterIndex = 0;
+        let suggestedWords = ['mango', 'robot', 'yes', 'no', 'milk', 'ice', 'mix', 'go', 'cool', 'fun', 'wow', 'help', 'more'];
+
+        // MacBook Air keyboard layout
+        const keyboardLayout = [
+            ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+            ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+            ['z', 'x', 'c', 'v', 'b', 'n', 'm']
+        ];
+
+        function renderKeyboard() {
+            const container = document.getElementById('keyboard');
+            container.innerHTML = '';
+            
+            keyboardLayout.forEach(row => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'keyboard-row';
+                
+                row.forEach(key => {
+                    const keyBtn = document.createElement('button');
+                    keyBtn.className = 'key';
+                    keyBtn.textContent = key.toUpperCase();
+                    keyBtn.dataset.key = key;
+                    keyBtn.onclick = () => virtualKeyPress(key);
+                    rowDiv.appendChild(keyBtn);
+                });
+                
+                container.appendChild(rowDiv);
+            });
+
+            // Space bar row
+            const spaceRow = document.createElement('div');
+            spaceRow.className = 'keyboard-row';
+            const spaceBtn = document.createElement('button');
+            spaceBtn.className = 'key space';
+            spaceBtn.textContent = 'SPACE';
+            spaceBtn.dataset.key = ' ';
+            spaceBtn.onclick = () => virtualKeyPress(' ');
+            spaceRow.appendChild(spaceBtn);
+            container.appendChild(spaceRow);
+        }
+
+        function startTypingHelper(word) {
+            targetWord = word.toLowerCase();
+            currentLetterIndex = 0;
+            typingHelperActive = true;
+            
+            document.getElementById('typingHelper').classList.add('show');
+            document.getElementById('chatInput').value = '';
+            document.getElementById('chatInput').focus();
+            
+            renderKeyboard();
+            updateTypingDisplay();
+            
+            speak(`Let's spell ${word}! Find the letter ${targetWord[0].toUpperCase()}`);
+        }
+
+        function updateTypingDisplay() {
+            // Update target word display
+            const wordDiv = document.getElementById('targetWord');
+            wordDiv.innerHTML = targetWord.split('').map((letter, i) => {
+                let cls = 'letter';
+                if (i < currentLetterIndex) cls += ' typed';
+                else if (i === currentLetterIndex) cls += ' current';
+                return `<span class="${cls}">${letter.toUpperCase()}</span>`;
+            }).join('');
+
+            // Update current letter guide
+            if (currentLetterIndex < targetWord.length) {
+                const currentLetter = targetWord[currentLetterIndex].toUpperCase();
+                document.getElementById('currentLetter').textContent = currentLetter;
+                document.getElementById('helperPrompt').textContent = `Bishop says: Find the letter ${currentLetter}!`;
+                
+                // Highlight key on keyboard
+                document.querySelectorAll('.key').forEach(k => {
+                    k.classList.remove('highlight', 'correct');
+                    if (k.dataset.key === targetWord[currentLetterIndex]) {
+                        k.classList.add('highlight');
+                    }
+                });
+            } else {
+                // Word complete!
+                wordComplete();
+            }
+        }
+
+        function checkTyping(event) {
+            if (!typingHelperActive) return;
+            
+            const input = document.getElementById('chatInput');
+            const typed = input.value.toLowerCase();
+            const expected = targetWord.substring(0, typed.length);
+            
+            if (typed === expected) {
+                currentLetterIndex = typed.length;
+                
+                if (currentLetterIndex > 0) {
+                    // Mark previous key as correct briefly
+                    const prevLetter = targetWord[currentLetterIndex - 1];
+                    document.querySelectorAll('.key').forEach(k => {
+                        if (k.dataset.key === prevLetter) {
+                            k.classList.remove('highlight');
+                            k.classList.add('correct');
+                        }
+                    });
+                }
+                
+                updateTypingDisplay();
+                
+                if (currentLetterIndex < targetWord.length) {
+                    // Speak next letter
+                    setTimeout(() => {
+                        speak(`Good! Now find ${targetWord[currentLetterIndex].toUpperCase()}`);
+                    }, 300);
+                }
+            }
+        }
+
+        function virtualKeyPress(key) {
+            const input = document.getElementById('chatInput');
+            input.value += key;
+            input.focus();
+            checkTyping();
+        }
+
+        function wordComplete() {
+            document.getElementById('helperPrompt').textContent = '🎉 AMAZING! You spelled it!';
+            document.getElementById('currentLetter').textContent = '✓';
+            document.querySelectorAll('.key').forEach(k => k.classList.remove('highlight'));
+            
+            speak(`Yes! You spelled ${targetWord}! Great job!`);
+            
+            // Add celebration
+            const helper = document.getElementById('typingHelper');
+            const celebration = document.createElement('div');
+            celebration.className = 'celebration';
+            celebration.textContent = '🎉 PERFECT! 🌟';
+            helper.appendChild(celebration);
+            
+            setTimeout(() => {
+                typingHelperActive = false;
+                document.getElementById('typingHelper').classList.remove('show');
+                celebration.remove();
+            }, 2000);
+        }
+
+        function speakCurrentLetter() {
+            if (currentLetterIndex < targetWord.length) {
+                const letter = targetWord[currentLetterIndex].toUpperCase();
+                speak(`The letter ${letter}. Find ${letter} on the keyboard!`);
+            }
+        }
+
+        function skipTypingHelp() {
+            typingHelperActive = false;
+            document.getElementById('typingHelper').classList.remove('show');
+            document.getElementById('chatInput').value = targetWord;
+        }
+
+        // Show typing helper after Bishop asks a question
+        function suggestTyping() {
+            // Pick a random simple word
+            const word = suggestedWords[Math.floor(Math.random() * suggestedWords.length)];
+            setTimeout(() => {
+                if (!typingHelperActive) {
+                    startTypingHelper(word);
+                }
+            }, 2000);
+        }
+
+        // Manual typing practice
+        function practiceTyping() {
+            const words = ['robot', 'mango', 'motor', 'spin', 'mix', 'milk', 'ice', 'power', 'start', 'help', 'build', 'cool', 'fast', 'slow'];
+            const word = words[Math.floor(Math.random() * words.length)];
+            startTypingHelper(word);
         }
 
         // Init - load previous conversation
