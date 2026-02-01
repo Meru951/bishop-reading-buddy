@@ -392,10 +392,12 @@
             bottom: 0;
             background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             z-index: 200;
             padding: 20px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .intro-card {
@@ -406,6 +408,27 @@
             width: 100%;
             text-align: center;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin: auto 0;
+        }
+
+        /* Audio control button */
+        .audio-control {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5em;
+            cursor: pointer;
+            z-index: 300;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .audio-control:active {
+            transform: scale(0.95);
         }
 
         .intro-bishop {
@@ -577,6 +600,9 @@
     </style>
 </head>
 <body>
+    <!-- Audio stop/play button -->
+    <button class="audio-control" id="audioControl" onclick="toggleAudio()">🔊</button>
+    
     <div class="container">
         <!-- Intro Screen - explains the game FIRST -->
         <div class="intro-screen" id="introScreen">
@@ -857,12 +883,16 @@
         }
 
         function speakNaturally(text) {
+            if (audioMuted) return; // Don't speak if muted
+            
             // Break into sentences for natural pacing
             const sentences = text.trim().split(/[.!?]+/).filter(s => s.trim());
             let delay = 0;
             
             sentences.forEach((sentence, i) => {
                 setTimeout(() => {
+                    if (audioMuted) return; // Check again in case muted during playback
+                    
                     const utterance = new SpeechSynthesisUtterance(sentence.trim());
                     utterance.rate = 1.0;  // Normal speed
                     utterance.pitch = 1.1;  // Friendly tone
@@ -1213,11 +1243,28 @@
             speak(lastMessage);
         }
 
+        // Audio mute state
+        let audioMuted = false;
+
         function speak(text) {
+            if (audioMuted) return; // Don't speak if muted
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.rate = 0.9;
             utterance.pitch = 1.0;
             speechSynthesis.speak(utterance);
+        }
+
+        function toggleAudio() {
+            audioMuted = !audioMuted;
+            const btn = document.getElementById('audioControl');
+            
+            if (audioMuted) {
+                // Stop any current speech
+                speechSynthesis.cancel();
+                btn.textContent = '🔇';
+            } else {
+                btn.textContent = '🔊';
+            }
         }
 
         // Start!
