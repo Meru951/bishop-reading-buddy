@@ -841,6 +841,147 @@
             50% { transform: scale(1.2); }
             100% { transform: scale(1); opacity: 1; }
         }
+
+        /* Go Game Styles */
+        .go-game {
+            background: #d4a574;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+        }
+
+        .go-info {
+            display: flex;
+            justify-content: space-around;
+            color: #5d4037;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .go-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0;
+            max-width: 280px;
+            margin: 0 auto;
+            background: #c9a66b;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .go-point {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            background: transparent;
+            border: none;
+        }
+
+        /* Grid lines */
+        .go-point::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(to right, transparent 48%, #8b7355 48%, #8b7355 52%, transparent 52%),
+                linear-gradient(to bottom, transparent 48%, #8b7355 48%, #8b7355 52%, transparent 52%);
+        }
+
+        /* Edge points - hide lines that go off board */
+        .go-point.top::before {
+            background: 
+                linear-gradient(to right, transparent 48%, #8b7355 48%, #8b7355 52%, transparent 52%),
+                linear-gradient(to bottom, transparent 50%, #8b7355 50%, #8b7355 52%, transparent 52%);
+        }
+        .go-point.bottom::before {
+            background: 
+                linear-gradient(to right, transparent 48%, #8b7355 48%, #8b7355 52%, transparent 52%),
+                linear-gradient(to bottom, transparent 48%, #8b7355 48%, #8b7355 50%, transparent 50%);
+        }
+        .go-point.left::before {
+            background: 
+                linear-gradient(to right, transparent 50%, #8b7355 50%, #8b7355 52%, transparent 52%),
+                linear-gradient(to bottom, transparent 48%, #8b7355 48%, #8b7355 52%, transparent 52%);
+        }
+        .go-point.right::before {
+            background: 
+                linear-gradient(to right, transparent 48%, #8b7355 48%, #8b7355 50%, transparent 50%),
+                linear-gradient(to bottom, transparent 48%, #8b7355 48%, #8b7355 52%, transparent 52%);
+        }
+        .go-point.top.left::before {
+            background: 
+                linear-gradient(to right, transparent 50%, #8b7355 50%, #8b7355 52%, transparent 52%),
+                linear-gradient(to bottom, transparent 50%, #8b7355 50%, #8b7355 52%, transparent 52%);
+        }
+        .go-point.top.right::before {
+            background: 
+                linear-gradient(to right, transparent 48%, #8b7355 48%, #8b7355 50%, transparent 50%),
+                linear-gradient(to bottom, transparent 50%, #8b7355 50%, #8b7355 52%, transparent 52%);
+        }
+        .go-point.bottom.left::before {
+            background: 
+                linear-gradient(to right, transparent 50%, #8b7355 50%, #8b7355 52%, transparent 52%),
+                linear-gradient(to bottom, transparent 48%, #8b7355 48%, #8b7355 50%, transparent 50%);
+        }
+        .go-point.bottom.right::before {
+            background: 
+                linear-gradient(to right, transparent 48%, #8b7355 48%, #8b7355 50%, transparent 50%),
+                linear-gradient(to bottom, transparent 48%, #8b7355 48%, #8b7355 50%, transparent 50%);
+        }
+
+        .go-stone {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+            transition: transform 0.2s;
+        }
+
+        .go-stone.black {
+            background: radial-gradient(circle at 30% 30%, #555, #111);
+        }
+
+        .go-stone.white {
+            background: radial-gradient(circle at 30% 30%, #fff, #ddd);
+            border: 1px solid #999;
+        }
+
+        .go-stone.preview {
+            opacity: 0.5;
+        }
+
+        .go-point:hover .go-stone.preview {
+            opacity: 0.7;
+            transform: scale(1.1);
+        }
+
+        .go-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            font-size: 0.95em;
+            color: #5d4037;
+        }
+
+        .go-highlight {
+            animation: goGlow 1s infinite alternate;
+        }
+
+        @keyframes goGlow {
+            from { box-shadow: 0 0 5px 2px rgba(255,193,7,0.5); }
+            to { box-shadow: 0 0 15px 5px rgba(255,193,7,0.8); }
+        }
     </style>
 </head>
 <body>
@@ -855,6 +996,7 @@
         <div class="main-tabs">
             <button class="main-tab active" id="chatTab" onclick="switchTab('chat')">🗨️ Chat & Learn</button>
             <button class="main-tab" id="solitaireTab" onclick="switchTab('solitaire')">🃏 Solitaire</button>
+            <button class="main-tab" id="goTab" onclick="switchTab('go')">⚫ Go</button>
         </div>
 
         <!-- CHAT SECTION -->
@@ -952,6 +1094,56 @@
                         <span class="sol-word" onclick="speakWord('same')">SAME</span>
                         <span class="sol-word" onclick="speakWord('win')">WIN</span>
                         <span class="sol-word" onclick="speakWord('game')">GAME</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GO SECTION -->
+        <div id="goSection" style="display:none;">
+            <div class="solitaire-container">
+                <div class="solitaire-bishop">
+                    <div class="bishop-says" id="goBishop">
+                        🤖 Welcome to <span class="highlight-word">GO</span>! It's one of the oldest games in the world - over 4000 years old!
+                        It's simple to learn but takes a lifetime to master. Let's start with the basics!
+                    </div>
+                </div>
+                
+                <div class="solitaire-controls">
+                    <button class="sol-btn" id="goLessonBtn" onclick="nextGoLesson()">📚 Next Lesson</button>
+                    <button class="sol-btn" onclick="resetGoBoard()">🆕 Clear Board</button>
+                    <button class="sol-btn" onclick="speakGoLesson()">🔊 Read to Me</button>
+                </div>
+                
+                <!-- Go Board - small 5x5 for learning -->
+                <div class="go-game">
+                    <div class="go-info">
+                        <span>Lesson: <span id="goLessonNum">1</span>/8</span>
+                        <span id="goTurn">⚫ Black's Turn</span>
+                    </div>
+                    
+                    <div class="go-board" id="goBoard">
+                        <!-- 5x5 grid will be added by JavaScript -->
+                    </div>
+                    
+                    <div class="go-legend">
+                        <span>⚫ Black stone</span>
+                        <span>⚪ White stone</span>
+                        <span>🟫 Empty point</span>
+                    </div>
+                </div>
+                
+                <div class="solitaire-words">
+                    <h3>📚 Go Words to Learn:</h3>
+                    <div class="word-list">
+                        <span class="sol-word" onclick="speakWord('stone')">STONE</span>
+                        <span class="sol-word" onclick="speakWord('board')">BOARD</span>
+                        <span class="sol-word" onclick="speakWord('capture')">CAPTURE</span>
+                        <span class="sol-word" onclick="speakWord('liberty')">LIBERTY</span>
+                        <span class="sol-word" onclick="speakWord('surround')">SURROUND</span>
+                        <span class="sol-word" onclick="speakWord('territory')">TERRITORY</span>
+                        <span class="sol-word" onclick="speakWord('black')">BLACK</span>
+                        <span class="sol-word" onclick="speakWord('white')">WHITE</span>
                     </div>
                 </div>
             </div>
@@ -2059,19 +2251,315 @@
         function switchTab(tab) {
             document.getElementById('chatTab').classList.remove('active');
             document.getElementById('solitaireTab').classList.remove('active');
+            document.getElementById('goTab').classList.remove('active');
             document.getElementById('chatSection').style.display = 'none';
             document.getElementById('solitaireSection').style.display = 'none';
+            document.getElementById('goSection').style.display = 'none';
             
             if (tab === 'chat') {
                 document.getElementById('chatTab').classList.add('active');
                 document.getElementById('chatSection').style.display = 'block';
-            } else {
+            } else if (tab === 'solitaire') {
                 document.getElementById('solitaireTab').classList.add('active');
                 document.getElementById('solitaireSection').style.display = 'block';
                 if (!solitaireStarted) {
                     newSolitaireGame();
                     solitaireStarted = true;
                 }
+            } else if (tab === 'go') {
+                document.getElementById('goTab').classList.add('active');
+                document.getElementById('goSection').style.display = 'block';
+                if (!goStarted) {
+                    initGoGame();
+                    goStarted = true;
+                }
+            }
+        }
+
+        // ===== GO GAME =====
+        let goStarted = false;
+        let goBoard = Array(25).fill(null); // 5x5 board
+        let goTurn = 'black';
+        let goLesson = 1;
+        let goInteractive = false;
+
+        const goLessons = [
+            {
+                title: "What is Go?",
+                text: "GO is a game for two players! One plays with BLACK stones, one plays with WHITE stones. You take turns putting stones on the board. The goal is to surround more empty spaces than your opponent!",
+                setup: [], // empty board
+                interactive: false
+            },
+            {
+                title: "The Board",
+                text: "This is a Go BOARD! It has lines that make a grid. We put stones where the lines CROSS, not in the squares! This is a small 5 by 5 board for learning. Real boards are much bigger!",
+                setup: [],
+                interactive: false
+            },
+            {
+                title: "Placing Stones",
+                text: "Try clicking on the board to place a stone! BLACK always goes first. Then WHITE. You put stones where the lines cross. Once placed, stones don't move!",
+                setup: [],
+                interactive: true
+            },
+            {
+                title: "What is a Liberty?",
+                text: "A LIBERTY is an empty point next to your stone! See the black stone in the middle? It has 4 liberties - up, down, left, and right. Liberties are like breathing space for your stones!",
+                setup: [{pos: 12, color: 'black'}], // center stone
+                interactive: false,
+                highlight: [7, 11, 13, 17] // the liberties
+            },
+            {
+                title: "Corner and Edge",
+                text: "Stones on the EDGE have fewer liberties! Edge stones have only 3 liberties. CORNER stones have only 2 liberties! That makes them easier to capture.",
+                setup: [{pos: 0, color: 'black'}, {pos: 2, color: 'black'}, {pos: 12, color: 'black'}],
+                interactive: false
+            },
+            {
+                title: "Capture!",
+                text: "When you SURROUND a stone and take away ALL its liberties, you CAPTURE it! Look: the white stones surround the black stone. Black has NO liberties left, so it's captured and removed!",
+                setup: [
+                    {pos: 12, color: 'black'},
+                    {pos: 7, color: 'white'},
+                    {pos: 11, color: 'white'},
+                    {pos: 13, color: 'white'},
+                    {pos: 17, color: 'white'}
+                ],
+                interactive: false,
+                captured: [12]
+            },
+            {
+                title: "Groups Share Liberties",
+                text: "Stones of the same color that touch become a GROUP! Groups share liberties. These two black stones together have 6 liberties! Groups are stronger than single stones.",
+                setup: [{pos: 11, color: 'black'}, {pos: 12, color: 'black'}],
+                interactive: false,
+                highlight: [6, 7, 10, 13, 16, 17]
+            },
+            {
+                title: "Practice Time!",
+                text: "Now you try! Place stones on the board. Try to surround your opponent's stones to capture them! Remember: stones need LIBERTIES to survive. Take away all liberties to capture!",
+                setup: [],
+                interactive: true
+            }
+        ];
+
+        function initGoGame() {
+            goLesson = 1;
+            renderGoLesson();
+        }
+
+        function renderGoBoard() {
+            const board = document.getElementById('goBoard');
+            board.innerHTML = '';
+            
+            for (let i = 0; i < 25; i++) {
+                const point = document.createElement('button');
+                point.className = 'go-point';
+                
+                // Add edge classes
+                const row = Math.floor(i / 5);
+                const col = i % 5;
+                if (row === 0) point.classList.add('top');
+                if (row === 4) point.classList.add('bottom');
+                if (col === 0) point.classList.add('left');
+                if (col === 4) point.classList.add('right');
+                
+                // Add stone if present
+                if (goBoard[i]) {
+                    const stone = document.createElement('div');
+                    stone.className = `go-stone ${goBoard[i]}`;
+                    point.appendChild(stone);
+                }
+                
+                point.onclick = () => placeGoStone(i);
+                point.onmouseenter = () => showGoPreview(i);
+                point.onmouseleave = () => hideGoPreview(i);
+                
+                board.appendChild(point);
+            }
+        }
+
+        function renderGoLesson() {
+            const lesson = goLessons[goLesson - 1];
+            
+            // Update UI
+            document.getElementById('goLessonNum').textContent = goLesson;
+            document.getElementById('goBishop').innerHTML = 
+                `🤖 <b>Lesson ${goLesson}: ${lesson.title}</b><br><br>${lesson.text}`;
+            
+            // Setup board
+            goBoard = Array(25).fill(null);
+            lesson.setup.forEach(s => {
+                goBoard[s.pos] = s.color;
+            });
+            
+            goInteractive = lesson.interactive || false;
+            goTurn = 'black';
+            document.getElementById('goTurn').textContent = goInteractive ? '⚫ Black\'s Turn' : '👀 Watch & Learn';
+            
+            renderGoBoard();
+            
+            // Highlight liberties if specified
+            if (lesson.highlight) {
+                setTimeout(() => {
+                    lesson.highlight.forEach(pos => {
+                        const points = document.querySelectorAll('.go-point');
+                        points[pos].classList.add('go-highlight');
+                    });
+                }, 500);
+            }
+            
+            // Show capture animation if specified
+            if (lesson.captured) {
+                setTimeout(() => {
+                    lesson.captured.forEach(pos => {
+                        goBoard[pos] = null;
+                    });
+                    renderGoBoard();
+                    speak("Captured! The stone is removed!");
+                }, 2000);
+            }
+            
+            // Update button text
+            if (goLesson >= goLessons.length) {
+                document.getElementById('goLessonBtn').textContent = '🔄 Start Over';
+            } else {
+                document.getElementById('goLessonBtn').textContent = '📚 Next Lesson';
+            }
+        }
+
+        function nextGoLesson() {
+            if (goLesson >= goLessons.length) {
+                goLesson = 1;
+            } else {
+                goLesson++;
+            }
+            renderGoLesson();
+            speakGoLesson();
+        }
+
+        function speakGoLesson() {
+            const lesson = goLessons[goLesson - 1];
+            speak(`Lesson ${goLesson}: ${lesson.title}. ${lesson.text}`);
+        }
+
+        function placeGoStone(pos) {
+            if (!goInteractive) {
+                speak("This lesson is for watching! Click Next Lesson to continue.");
+                return;
+            }
+            
+            if (goBoard[pos] !== null) {
+                speak("That spot is taken! Try another one.");
+                return;
+            }
+            
+            goBoard[pos] = goTurn;
+            renderGoBoard();
+            
+            speak(goTurn === 'black' ? 'Black stone placed!' : 'White stone placed!');
+            
+            // Check for captures
+            checkGoCaptures(goTurn === 'black' ? 'white' : 'black');
+            
+            // Switch turn
+            goTurn = goTurn === 'black' ? 'white' : 'black';
+            document.getElementById('goTurn').textContent = goTurn === 'black' ? '⚫ Black\'s Turn' : '⚪ White\'s Turn';
+        }
+
+        function showGoPreview(pos) {
+            if (!goInteractive || goBoard[pos] !== null) return;
+            
+            const points = document.querySelectorAll('.go-point');
+            const preview = document.createElement('div');
+            preview.className = `go-stone ${goTurn} preview`;
+            points[pos].appendChild(preview);
+        }
+
+        function hideGoPreview(pos) {
+            const points = document.querySelectorAll('.go-point');
+            const preview = points[pos].querySelector('.preview');
+            if (preview) preview.remove();
+        }
+
+        function getNeighbors(pos) {
+            const neighbors = [];
+            const row = Math.floor(pos / 5);
+            const col = pos % 5;
+            
+            if (row > 0) neighbors.push(pos - 5); // up
+            if (row < 4) neighbors.push(pos + 5); // down
+            if (col > 0) neighbors.push(pos - 1); // left
+            if (col < 4) neighbors.push(pos + 1); // right
+            
+            return neighbors;
+        }
+
+        function getGroup(pos, color) {
+            const group = new Set();
+            const stack = [pos];
+            
+            while (stack.length > 0) {
+                const p = stack.pop();
+                if (group.has(p)) continue;
+                if (goBoard[p] !== color) continue;
+                
+                group.add(p);
+                getNeighbors(p).forEach(n => {
+                    if (goBoard[n] === color && !group.has(n)) {
+                        stack.push(n);
+                    }
+                });
+            }
+            
+            return group;
+        }
+
+        function getLiberties(group) {
+            const liberties = new Set();
+            group.forEach(pos => {
+                getNeighbors(pos).forEach(n => {
+                    if (goBoard[n] === null) {
+                        liberties.add(n);
+                    }
+                });
+            });
+            return liberties;
+        }
+
+        function checkGoCaptures(colorToCheck) {
+            const captured = [];
+            const checked = new Set();
+            
+            for (let i = 0; i < 25; i++) {
+                if (goBoard[i] === colorToCheck && !checked.has(i)) {
+                    const group = getGroup(i, colorToCheck);
+                    group.forEach(p => checked.add(p));
+                    
+                    const liberties = getLiberties(group);
+                    if (liberties.size === 0) {
+                        group.forEach(p => captured.push(p));
+                    }
+                }
+            }
+            
+            if (captured.length > 0) {
+                captured.forEach(pos => {
+                    goBoard[pos] = null;
+                });
+                renderGoBoard();
+                speak(`Captured ${captured.length} ${captured.length === 1 ? 'stone' : 'stones'}!`);
+            }
+        }
+
+        function resetGoBoard() {
+            goBoard = Array(25).fill(null);
+            goTurn = 'black';
+            document.getElementById('goTurn').textContent = '⚫ Black\'s Turn';
+            renderGoBoard();
+            
+            if (goInteractive) {
+                speak("Board cleared! Black goes first.");
             }
         }
 
