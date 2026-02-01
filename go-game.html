@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bishop - Let's Play Go!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard', cursive, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        /* Bishop Chat Bubble */
+        .bishop-chat {
+            background: white;
+            border-radius: 25px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            position: relative;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .bishop-chat::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 30px;
+            border: 15px solid transparent;
+            border-top-color: white;
+            border-bottom: 0;
+        }
+
+        .bishop-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .bishop-avatar {
+            font-size: 2.5em;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .bishop-name {
+            font-weight: bold;
+            color: #3498db;
+            font-size: 1.2em;
+        }
+
+        .bishop-message {
+            font-size: 1.3em;
+            line-height: 1.5;
+            color: #2c3e50;
+        }
+
+        .bishop-message .highlight {
+            background: #f39c12;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        /* Sound button */
+        .sound-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+
+        /* Game Board */
+        .game-area {
+            background: #d4a574;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #5d4037;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .turn-indicator {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .score {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        /* The Go Board - 5x5 for beginners */
+        .go-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0;
+            background: #c9a66b;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 0 auto;
+            max-width: 300px;
+        }
+
+        .point {
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            background: transparent;
+            border: none;
+            transition: transform 0.1s;
+        }
+
+        .point:active {
+            transform: scale(0.95);
+        }
+
+        /* Grid lines */
+        .point::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .point.center::before {
+            background: 
+                linear-gradient(to right, transparent 48%, #8b7355 48%, #8b7355 52%, transparent 52%),
+                linear-gradient(to bottom, transparent 48%, #8b7355 48%, #8b7355 52%, transparent 52%);
+        }
+
+        .point.top::before {
+            background: 
+                linear-gradient(to right, transparent 48%, #8b7355 48%, #8b7355 52%, transparent 52%),
+                linear-gradient(to bottom, transparent 50%, #8b7355 50%, #8b7355 52%, transparent 52%);
+        }
+
+        .point.bottom::before {
+            background: 
+                linear-gradient(to right, transparent 48%, #8b7355 48%, #8b7355 52%, transparent 52%),
+                linear-gradient(to bottom, transparent 48%, #8b7355 48%, #8b7355 50%, transparent 50%);
+        }
+
+        .point.left::before {
+            background: 
+                linear-gradient(to right, transparent 50%, #8b7355 50%, #8b7355 52%, transparent 52%),
+                linear-gradient(to bottom, transparent 48%, #8b7355 48%, #8b7355 52%, transparent 52%);
+        }
+
+        .point.right::before {
+            background: 
+                linear-gradient(to right, transparent 48%, #8b7355 48%, #8b7355 50%, transparent 50%),
+                linear-gradient(to bottom, transparent 48%, #8b7355 48%, #8b7355 52%, transparent 52%);
+        }
+
+        .point.top.left::before {
+            background: 
+                linear-gradient(to right, transparent 50%, #8b7355 50%, #8b7355 52%, transparent 52%),
+                linear-gradient(to bottom, transparent 50%, #8b7355 50%, #8b7355 52%, transparent 52%);
+        }
+
+        .point.top.right::before {
+            background: 
+                linear-gradient(to right, transparent 48%, #8b7355 48%, #8b7355 50%, transparent 50%),
+                linear-gradient(to bottom, transparent 50%, #8b7355 50%, #8b7355 52%, transparent 52%);
+        }
+
+        .point.bottom.left::before {
+            background: 
+                linear-gradient(to right, transparent 50%, #8b7355 50%, #8b7355 52%, transparent 52%),
+                linear-gradient(to bottom, transparent 48%, #8b7355 48%, #8b7355 50%, transparent 50%);
+        }
+
+        .point.bottom.right::before {
+            background: 
+                linear-gradient(to right, transparent 48%, #8b7355 48%, #8b7355 50%, transparent 50%),
+                linear-gradient(to bottom, transparent 48%, #8b7355 48%, #8b7355 50%, transparent 50%);
+        }
+
+        /* Stones */
+        .stone {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+            box-shadow: 2px 3px 5px rgba(0,0,0,0.4);
+            animation: dropIn 0.3s ease;
+        }
+
+        @keyframes dropIn {
+            from { transform: scale(0) translateY(-20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .stone.black {
+            background: radial-gradient(circle at 30% 30%, #555, #111);
+        }
+
+        .stone.white {
+            background: radial-gradient(circle at 30% 30%, #fff, #ddd);
+            border: 1px solid #aaa;
+        }
+
+        /* Preview on hover */
+        .stone.preview {
+            opacity: 0.4;
+        }
+
+        /* Highlight for hints */
+        .point.hint {
+            animation: hintPulse 1s infinite;
+        }
+
+        @keyframes hintPulse {
+            0%, 100% { background: rgba(46, 204, 113, 0.3); }
+            50% { background: rgba(46, 204, 113, 0.6); }
+        }
+
+        .point.danger {
+            animation: dangerPulse 0.5s infinite;
+        }
+
+        @keyframes dangerPulse {
+            0%, 100% { background: rgba(231, 76, 60, 0.3); }
+            50% { background: rgba(231, 76, 60, 0.6); }
+        }
+
+        /* Captured animation */
+        .stone.captured {
+            animation: captured 0.5s ease forwards;
+        }
+
+        @keyframes captured {
+            to { transform: scale(0); opacity: 0; }
+        }
+
+        /* Celebration */
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .celebration-content {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            text-align: center;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            to { transform: scale(1); }
+        }
+
+        .celebration-emoji {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .celebration-text {
+            font-size: 2em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .celebration-btn {
+            padding: 15px 40px;
+            font-size: 1.3em;
+            font-family: inherit;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+
+        /* Bottom buttons */
+        .game-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .game-btn {
+            padding: 12px 25px;
+            font-size: 1.1em;
+            font-family: inherit;
+            font-weight: bold;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .game-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .game-btn.hint {
+            background: #f39c12;
+            color: white;
+        }
+
+        .game-btn.reset {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .game-btn.home {
+            background: #3498db;
+            color: white;
+        }
+
+        /* Level indicator */
+        .level-bar {
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 10px 20px;
+            margin-top: 15px;
+            text-align: center;
+            color: white;
+            font-size: 1.1em;
+        }
+
+        .level-stars {
+            font-size: 1.5em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Bishop talks here -->
+        <div class="bishop-chat">
+            <button class="sound-btn" onclick="speakMessage()">🔊</button>
+            <div class="bishop-header">
+                <span class="bishop-avatar">🤖</span>
+                <span class="bishop-name">Bishop</span>
+            </div>
+            <div class="bishop-message" id="bishopMessage">
+                Hey Krishna! Let's play <span class="highlight">GO</span>! 
+                Tap anywhere to put down a <span class="highlight">black stone</span>! ⚫
+            </div>
+        </div>
+
+        <!-- Game Area -->
+        <div class="game-area">
+            <div class="game-header">
+                <div class="turn-indicator">
+                    <span id="turnStone">⚫</span>
+                    <span id="turnText">Your turn!</span>
+                </div>
+                <div class="score">
+                    🎯 <span id="captureCount">0</span> captured
+                </div>
+            </div>
+
+            <div class="go-board" id="board"></div>
+
+            <div class="game-buttons">
+                <button class="game-btn hint" onclick="giveHint()">💡 Help!</button>
+                <button class="game-btn reset" onclick="resetGame()">🔄 New</button>
+                <a href="krishna.html" class="game-btn home">🏠</a>
+            </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="level-bar">
+            <div>Level <span id="level">1</span>: <span id="levelName">First Steps</span></div>
+            <div class="level-stars" id="stars">⭐</div>
+        </div>
+    </div>
+
+    <!-- Celebration popup -->
+    <div class="celebration" id="celebration" style="display:none;">
+        <div class="celebration-content">
+            <div class="celebration-emoji" id="celebEmoji">🎉</div>
+            <div class="celebration-text" id="celebText">Amazing!</div>
+            <button class="celebration-btn" onclick="nextChallenge()">Next! →</button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let board = Array(25).fill(null);
+        let currentPlayer = 'black'; // Krishna is always black
+        let captureCount = 0;
+        let level = 1;
+        let moveCount = 0;
+        let lastMessage = '';
+
+        // Levels - progressive challenges
+        const levels = [
+            {
+                name: "First Steps",
+                intro: "Tap anywhere to put down a black stone! ⚫",
+                goal: "place3",
+                goalCount: 3,
+                setup: [],
+                hint: "Just tap! Put your stones on the board!"
+            },
+            {
+                name: "White Plays Too",
+                intro: "Now I'll play too! After you place a stone, I'll put a white one. ⚪",
+                goal: "place5",
+                goalCount: 5,
+                setup: [],
+                hint: "Keep playing! We take turns."
+            },
+            {
+                name: "Surround to Capture!",
+                intro: "See that white stone? <span class='highlight'>Surround it</span> to capture it! Put black stones on ALL sides!",
+                goal: "capture",
+                goalCount: 1,
+                setup: [{pos: 12, color: 'white'}],
+                hint: "Put black stones above, below, left, and right of the white stone!",
+                highlightTarget: 12
+            },
+            {
+                name: "Corner Trap!",
+                intro: "The corner is easier! This white stone only needs <span class='highlight'>2 stones</span> to capture!",
+                goal: "capture",
+                goalCount: 1,
+                setup: [{pos: 0, color: 'white'}],
+                hint: "Put one stone to the right, one below!",
+                highlightTarget: 0
+            },
+            {
+                name: "Edge Capture!",
+                intro: "Edge stones need <span class='highlight'>3 stones</span> to capture. You can do it!",
+                goal: "capture",
+                goalCount: 1,
+                setup: [{pos: 2, color: 'white'}],
+                hint: "Surround the top, left, right, and bottom!",
+                highlightTarget: 2
+            },
+            {
+                name: "Save Your Stone!",
+                intro: "Uh oh! Your black stone is almost captured! <span class='highlight'>Connect another stone</span> to save it!",
+                goal: "connect",
+                goalCount: 1,
+                setup: [{pos: 12, color: 'black'}, {pos: 7, color: 'white'}, {pos: 11, color: 'white'}, {pos: 17, color: 'white'}],
+                hint: "Put a black stone next to your other black stone!",
+                highlightTarget: 12,
+                dangerStone: 12
+            },
+            {
+                name: "Double Capture!",
+                intro: "Can you capture <span class='highlight'>TWO stones</span> at once? They're connected!",
+                goal: "capture",
+                goalCount: 2,
+                setup: [{pos: 11, color: 'white'}, {pos: 12, color: 'white'}],
+                hint: "Surround both white stones completely!",
+                highlightTarget: 11
+            },
+            {
+                name: "Free Play!",
+                intro: "You're a Go player now! Play freely and try to capture my stones! 🎉",
+                goal: "capture",
+                goalCount: 3,
+                setup: [],
+                hint: "Surround my white stones to capture them!"
+            }
+        ];
+
+        // Initialize
+        function init() {
+            loadLevel(level);
+        }
+
+        function loadLevel(lvl) {
+            level = lvl;
+            moveCount = 0;
+            captureCount = 0;
+            board = Array(25).fill(null);
+            currentPlayer = 'black';
+
+            const levelData = levels[Math.min(lvl - 1, levels.length - 1)];
+            
+            // Setup initial stones
+            levelData.setup.forEach(s => {
+                board[s.pos] = s.color;
+            });
+
+            // Update UI
+            document.getElementById('level').textContent = lvl;
+            document.getElementById('levelName').textContent = levelData.name;
+            document.getElementById('stars').textContent = '⭐'.repeat(Math.min(lvl, 5));
+            document.getElementById('captureCount').textContent = '0';
+            
+            say(levelData.intro);
+            renderBoard();
+
+            // Highlight target if any
+            if (levelData.highlightTarget !== undefined) {
+                setTimeout(() => {
+                    const points = document.querySelectorAll('.point');
+                    points[levelData.highlightTarget].classList.add('hint');
+                }, 500);
+            }
+            if (levelData.dangerStone !== undefined) {
+                setTimeout(() => {
+                    const points = document.querySelectorAll('.point');
+                    points[levelData.dangerStone].classList.add('danger');
+                }, 500);
+            }
+        }
+
+        function renderBoard() {
+            const boardEl = document.getElementById('board');
+            boardEl.innerHTML = '';
+
+            for (let i = 0; i < 25; i++) {
+                const point = document.createElement('button');
+                point.className = 'point';
+                
+                // Edge classes
+                const row = Math.floor(i / 5);
+                const col = i % 5;
+                
+                let edgeClass = 'center';
+                if (row === 0) edgeClass = 'top';
+                if (row === 4) edgeClass = 'bottom';
+                if (col === 0) edgeClass += ' left';
+                if (col === 4) edgeClass += ' right';
+                point.className = `point ${edgeClass.trim()}`;
+
+                // Add stone if present
+                if (board[i]) {
+                    const stone = document.createElement('div');
+                    stone.className = `stone ${board[i]}`;
+                    point.appendChild(stone);
+                }
+
+                point.onclick = () => placeStone(i);
+                point.onmouseenter = () => showPreview(i);
+                point.onmouseleave = () => hidePreview(i);
+                
+                boardEl.appendChild(point);
+            }
+        }
+
+        function showPreview(pos) {
+            if (board[pos] || currentPlayer !== 'black') return;
+            const points = document.querySelectorAll('.point');
+            const preview = document.createElement('div');
+            preview.className = 'stone black preview';
+            points[pos].appendChild(preview);
+        }
+
+        function hidePreview(pos) {
+            const points = document.querySelectorAll('.point');
+            const preview = points[pos].querySelector('.preview');
+            if (preview) preview.remove();
+        }
+
+        function placeStone(pos) {
+            if (board[pos]) {
+                say("That spot is taken! Try an empty one! 😊");
+                return;
+            }
+
+            // Place Krishna's stone
+            board[pos] = 'black';
+            moveCount++;
+            renderBoard();
+
+            // Check for captures
+            const captured = checkCaptures('white');
+            
+            // Teaching moments based on what happened
+            if (captured > 0) {
+                captureCount += captured;
+                document.getElementById('captureCount').textContent = captureCount;
+                celebrateCapture(captured);
+                checkGoal();
+                return;
+            }
+
+            // Check level goals
+            const levelData = levels[Math.min(level - 1, levels.length - 1)];
+            
+            if (levelData.goal === 'place3' && moveCount >= 3) {
+                celebrate("You placed 3 stones!", "⚫⚫⚫");
+                return;
+            }
+            
+            if (levelData.goal === 'connect') {
+                // Check if Krishna connected to save the stone
+                const group = getGroup(12, 'black');
+                if (group.size > 1) {
+                    const liberties = getLiberties(group);
+                    if (liberties.size > 0) {
+                        celebrate("You saved your stone!", "💪");
+                        return;
+                    }
+                }
+            }
+
+            // Give encouraging feedback
+            const encouragements = [
+                "Nice move! ⚫",
+                "Good one! 👍",
+                "Keep going! 🎯",
+                "You're doing great! ⭐"
+            ];
+            say(encouragements[Math.floor(Math.random() * encouragements.length)]);
+
+            // Bishop plays (white) after a short delay
+            if (level >= 2) {
+                setTimeout(() => {
+                    bishopPlays();
+                }, 800);
+            }
+        }
+
+        function bishopPlays() {
+            // Simple AI - play somewhere useful
+            const empty = [];
+            for (let i = 0; i < 25; i++) {
+                if (!board[i]) empty.push(i);
+            }
+            
+            if (empty.length === 0) return;
+
+            // Try to play near existing stones or center
+            let bestMove = empty[Math.floor(Math.random() * empty.length)];
+            
+            // Prefer center area
+            const centerish = [6, 7, 8, 11, 12, 13, 16, 17, 18];
+            const goodMoves = empty.filter(p => centerish.includes(p));
+            if (goodMoves.length > 0) {
+                bestMove = goodMoves[Math.floor(Math.random() * goodMoves.length)];
+            }
+
+            board[bestMove] = 'white';
+            renderBoard();
+
+            // Check if Bishop captured Krishna's stone (uh oh moment!)
+            const captured = checkCaptures('black');
+            if (captured > 0) {
+                say("Oops! I captured your stone! 😮 Try to protect them next time!");
+            } else {
+                const responses = [
+                    "My turn! ⚪",
+                    "I'll go here! ⚪",
+                    "Your turn now! ⚫"
+                ];
+                say(responses[Math.floor(Math.random() * responses.length)]);
+            }
+
+            currentPlayer = 'black';
+            document.getElementById('turnStone').textContent = '⚫';
+            document.getElementById('turnText').textContent = "Your turn!";
+        }
+
+        function checkCaptures(colorToCapture) {
+            const captured = [];
+            const checked = new Set();
+
+            for (let i = 0; i < 25; i++) {
+                if (board[i] === colorToCapture && !checked.has(i)) {
+                    const group = getGroup(i, colorToCapture);
+                    group.forEach(p => checked.add(p));
+                    
+                    const liberties = getLiberties(group);
+                    if (liberties.size === 0) {
+                        group.forEach(p => captured.push(p));
+                    }
+                }
+            }
+
+            if (captured.length > 0) {
+                // Animate capture
+                const points = document.querySelectorAll('.point');
+                captured.forEach(pos => {
+                    const stone = points[pos].querySelector('.stone');
+                    if (stone) stone.classList.add('captured');
+                });
+
+                setTimeout(() => {
+                    captured.forEach(pos => board[pos] = null);
+                    renderBoard();
+                }, 500);
+            }
+
+            return captured.length;
+        }
+
+        function getGroup(pos, color) {
+            const group = new Set();
+            const stack = [pos];
+            
+            while (stack.length > 0) {
+                const p = stack.pop();
+                if (group.has(p)) continue;
+                if (board[p] !== color) continue;
+                
+                group.add(p);
+                getNeighbors(p).forEach(n => {
+                    if (board[n] === color && !group.has(n)) {
+                        stack.push(n);
+                    }
+                });
+            }
+            return group;
+        }
+
+        function getLiberties(group) {
+            const liberties = new Set();
+            group.forEach(pos => {
+                getNeighbors(pos).forEach(n => {
+                    if (board[n] === null) liberties.add(n);
+                });
+            });
+            return liberties;
+        }
+
+        function getNeighbors(pos) {
+            const neighbors = [];
+            const row = Math.floor(pos / 5);
+            const col = pos % 5;
+            if (row > 0) neighbors.push(pos - 5);
+            if (row < 4) neighbors.push(pos + 5);
+            if (col > 0) neighbors.push(pos - 1);
+            if (col < 4) neighbors.push(pos + 1);
+            return neighbors;
+        }
+
+        function celebrateCapture(count) {
+            const messages = [
+                ["You captured it!", "🎯"],
+                ["BOOM! Captured!", "💥"],
+                ["Got it!", "⭐"],
+                ["Amazing capture!", "🎉"]
+            ];
+            const msg = messages[Math.floor(Math.random() * messages.length)];
+            
+            if (count > 1) {
+                celebrate(`${count} stones captured!`, "🎉🎉");
+            } else {
+                say(`${msg[0]} ${msg[1]}`);
+            }
+        }
+
+        function checkGoal() {
+            const levelData = levels[Math.min(level - 1, levels.length - 1)];
+            
+            if (levelData.goal === 'capture' && captureCount >= levelData.goalCount) {
+                setTimeout(() => {
+                    celebrate("Level Complete!", "🏆");
+                }, 1000);
+            }
+        }
+
+        function celebrate(text, emoji) {
+            document.getElementById('celebText').textContent = text;
+            document.getElementById('celebEmoji').textContent = emoji;
+            document.getElementById('celebration').style.display = 'flex';
+            speak(text);
+        }
+
+        function nextChallenge() {
+            document.getElementById('celebration').style.display = 'none';
+            if (level < levels.length) {
+                loadLevel(level + 1);
+            } else {
+                loadLevel(levels.length); // Stay on free play
+            }
+        }
+
+        function giveHint() {
+            const levelData = levels[Math.min(level - 1, levels.length - 1)];
+            say(levelData.hint);
+        }
+
+        function resetGame() {
+            loadLevel(level);
+        }
+
+        function say(message) {
+            document.getElementById('bishopMessage').innerHTML = message;
+            lastMessage = message.replace(/<[^>]*>/g, ''); // Strip HTML for speech
+        }
+
+        function speakMessage() {
+            speak(lastMessage);
+        }
+
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            speechSynthesis.speak(utterance);
+        }
+
+        // Start!
+        init();
+    </script>
+</body>
+</html>
