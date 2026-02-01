@@ -578,19 +578,23 @@
         }
 
         function playIntroNarration() {
-            // Natural, friendly narration
+            // Detailed, friendly narration - explain everything
             const narration = `
                 Hey Krishna! Let's play Memory Match!
-                This is a really fun game.
-                Your goal is to find all the matching pairs.
+                This game is all about remembering where things are.
+                See all these cards? They're face down, so you can't see the pictures.
+                But every card has a twin! Another card with the same picture.
+                Your job is to find all the twins. We call them matching pairs.
                 Here's how you play.
-                You tap a card to flip it over.
-                Then tap another card.
-                If they're the same, you found a match! And you keep them.
-                If they're different, they flip back. But remember where they were!
-                The trick is to use your memory.
-                Find all the pairs and you win!
-                Ready? Tap Let's Play when you want to start!
+                Tap one card. It flips over and shows you the picture.
+                Then tap another card. It flips over too.
+                Now look at both pictures. Are they the same?
+                If yes, you found a match! Those cards stay face up. You got them!
+                If no, they're different. They flip back over and hide again.
+                But here's the secret. Try to remember what you saw and where it was!
+                Next time you see that picture, you'll know where its twin is hiding.
+                Find all the pairs and you win the game!
+                Ready to try? Tap the green button!
             `;
             speakNaturally(narration);
         }
@@ -602,8 +606,8 @@
             sentences.forEach((sentence, i) => {
                 setTimeout(() => {
                     const utterance = new SpeechSynthesisUtterance(sentence.trim());
-                    utterance.rate = 0.85;
-                    utterance.pitch = 1.1;
+                    utterance.rate = 1.0;  // Normal speed
+                    utterance.pitch = 1.1;  // Friendly tone
                     
                     const voices = speechSynthesis.getVoices();
                     const goodVoice = voices.find(v => 
@@ -617,7 +621,7 @@
                     speechSynthesis.speak(utterance);
                 }, delay);
                 
-                delay += (sentence.length * 60) + 400;
+                delay += (sentence.length * 50) + 300;
             });
         }
 

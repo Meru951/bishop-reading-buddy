@@ -838,31 +838,34 @@
         }
 
         function playIntroNarration() {
-            // Natural, friendly narration like Bishop is really talking
+            // Simple, friendly narration - explain every hard word
             const narration = `
                 Hey Krishna! Welcome to Go!
-                This game is super fun. Here's what you need to know.
-                Your goal is to capture my stones!
-                How do you do it? You surround them!
-                Watch this... see the white stone?
-                Now I put black stones all around it... top, left, right, bottom...
-                And poof! It's captured!
-                That's it! Surround my stones to capture them.
-                When you're ready, tap Let's Play!
+                This is a really fun game. Let me tell you how to play.
+                You use black stones. I use white stones.
+                Your job is to capture my stones. Capture means to catch them and take them away!
+                How do you capture? You surround them.
+                Surround means you put your stones all around mine. On every side. So mine can't escape!
+                Watch the picture. See the white stone in the middle?
+                Now black stones go on top. On the left. On the right. On the bottom.
+                The white stone is trapped! It can't get out! 
+                And poof! It's captured! It disappears!
+                That's how you win. You trap my stones by putting yours all around them.
+                When you're ready to try, tap the green button!
             `;
             speakNaturally(narration);
         }
 
         function speakNaturally(text) {
-            // Break into sentences for more natural pacing
+            // Break into sentences for natural pacing
             const sentences = text.trim().split(/[.!?]+/).filter(s => s.trim());
             let delay = 0;
             
             sentences.forEach((sentence, i) => {
                 setTimeout(() => {
                     const utterance = new SpeechSynthesisUtterance(sentence.trim());
-                    utterance.rate = 0.85;  // Slightly slower for kids
-                    utterance.pitch = 1.1;  // Slightly higher, friendlier
+                    utterance.rate = 1.0;  // Normal speed
+                    utterance.pitch = 1.1;  // Friendly tone
                     
                     // Try to get a good voice
                     const voices = speechSynthesis.getVoices();
@@ -878,7 +881,7 @@
                 }, delay);
                 
                 // Estimate time for each sentence + pause
-                delay += (sentence.length * 60) + 400;
+                delay += (sentence.length * 50) + 300;
             });
         }
 
