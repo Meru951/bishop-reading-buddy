@@ -2926,6 +2926,13 @@
         window.onload = function() {
             updateProgress();
             
+            // Check if we should start on Go tab (from landing page)
+            const startTab = localStorage.getItem('startTab');
+            if (startTab === 'go' || window.location.hash === '#go') {
+                switchTab('go');
+                localStorage.removeItem('startTab');
+            }
+            
             // Previous conversation from Telegram
             const previousChat = [
                 { sender: 'user', text: "Hello, I am Krishna! I want to build a robot which makes a smoothie. It starts by itself and makes it! For smoothies, I want it to put all the things inside and mix it in the mixie." },

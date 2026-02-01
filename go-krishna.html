@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krishna's Go Adventure! ⚫⚪</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard', cursive, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        /* Floating stones animation */
+        .floating-stones {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .stone {
+            position: absolute;
+            font-size: 3em;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(10deg); }
+        }
+
+        .container {
+            text-align: center;
+            z-index: 1;
+            max-width: 600px;
+        }
+
+        /* Big welcome */
+        .welcome {
+            font-size: 2em;
+            color: #ffd700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700; }
+            to { text-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700, 0 0 60px #ffd700; }
+        }
+
+        /* Krishna's name - HUGE */
+        .krishna-name {
+            font-size: 5em;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 
+                3px 3px 0 #e94560,
+                6px 6px 0 #0f3460;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Subtitle */
+        .subtitle {
+            font-size: 2.5em;
+            color: #64ffda;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Message box */
+        .message-box {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 30px 40px;
+            margin-bottom: 40px;
+            border: 3px solid rgba(255,215,0,0.3);
+        }
+
+        .message {
+            font-size: 1.8em;
+            color: #fff;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .message .highlight {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .fun-fact {
+            font-size: 1.3em;
+            color: #64ffda;
+            background: rgba(100,255,218,0.1);
+            padding: 15px 25px;
+            border-radius: 20px;
+            margin-top: 20px;
+        }
+
+        /* Big play button */
+        .play-btn {
+            display: inline-block;
+            padding: 25px 60px;
+            font-size: 2.5em;
+            font-family: inherit;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 
+                0 10px 30px rgba(255,215,0,0.4),
+                0 0 60px rgba(255,215,0,0.2);
+            transition: all 0.3s ease;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 
+                0 15px 40px rgba(255,215,0,0.6),
+                0 0 80px rgba(255,215,0,0.4);
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 10px 30px rgba(255,215,0,0.4), 0 0 60px rgba(255,215,0,0.2); }
+            50% { box-shadow: 0 10px 40px rgba(255,215,0,0.6), 0 0 80px rgba(255,215,0,0.4); }
+        }
+
+        /* Stones decoration */
+        .stones-row {
+            font-size: 4em;
+            margin: 30px 0;
+            animation: stonesWave 3s ease-in-out infinite;
+        }
+
+        @keyframes stonesWave {
+            0%, 100% { transform: translateY(0); }
+            25% { transform: translateY(-10px); }
+            75% { transform: translateY(10px); }
+        }
+
+        /* Footer encouragement */
+        .footer {
+            margin-top: 30px;
+            font-size: 1.4em;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .footer .emoji {
+            font-size: 1.5em;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .krishna-name {
+                font-size: 3.5em;
+            }
+            .subtitle {
+                font-size: 1.8em;
+            }
+            .message {
+                font-size: 1.4em;
+            }
+            .play-btn {
+                font-size: 1.8em;
+                padding: 20px 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating background stones -->
+    <div class="floating-stones">
+        <span class="stone" style="top: 10%; left: 10%; animation-delay: 0s;">⚫</span>
+        <span class="stone" style="top: 20%; left: 80%; animation-delay: 1s;">⚪</span>
+        <span class="stone" style="top: 60%; left: 15%; animation-delay: 2s;">⚪</span>
+        <span class="stone" style="top: 70%; left: 85%; animation-delay: 0.5s;">⚫</span>
+        <span class="stone" style="top: 40%; left: 5%; animation-delay: 1.5s;">⚫</span>
+        <span class="stone" style="top: 80%; left: 50%; animation-delay: 2.5s;">⚪</span>
+        <span class="stone" style="top: 15%; left: 50%; animation-delay: 3s;">⚫</span>
+        <span class="stone" style="top: 50%; left: 90%; animation-delay: 1.2s;">⚪</span>
+    </div>
+
+    <div class="container">
+        <div class="welcome">🌟 Welcome, Champion! 🌟</div>
+        
+        <div class="krishna-name">KRISHNA</div>
+        
+        <div class="subtitle">Your Go Adventure Awaits! ⚫⚪</div>
+        
+        <div class="message-box">
+            <div class="message">
+                You're about to learn <span class="highlight">GO</span> — one of the 
+                <span class="highlight">COOLEST</span> games in the entire world!
+            </div>
+            <div class="message">
+                It's been played for <span class="highlight">4,000 YEARS</span> by 
+                kings, warriors, and now... <span class="highlight">YOU!</span> 👑
+            </div>
+            <div class="fun-fact">
+                🎮 Fun Fact: Go has more possible moves than there are atoms in the universe! And YOU are about to master it!
+            </div>
+        </div>
+
+        <div class="stones-row">⚫ ⚪ ⚫ ⚪ ⚫</div>
+
+        <a href="index.html#go" class="play-btn" onclick="localStorage.setItem('startTab', 'go');">
+            🎯 LET'S PLAY! 🎯
+        </a>
+
+        <div class="footer">
+            <span class="emoji">🤖</span> Bishop is waiting to teach you! <span class="emoji">🤖</span>
+        </div>
+    </div>
+
+    <script>
+        // Store that we want to start on Go tab
+        localStorage.setItem('startTab', 'go');
+    </script>
+</body>
+</html>
